@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class Speedometer extends StatefulWidget {
   final double value; // Value should be between 0 and 1
@@ -19,7 +20,7 @@ class _SpeedometerState extends State<Speedometer>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1500), // Total animation time
+      duration: const Duration(milliseconds: 2000), // Total animation time
       vsync: this,
     );
 
@@ -112,10 +113,9 @@ class SpeedometerPainter extends CustomPainter {
 
 // Draw percentage text
     final percentageSpan = TextSpan(
-      style: const TextStyle(
+      style: GoogleFonts.orbitron(
         color: Colors.black,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
+        fontSize: 20,
       ),
       text: '${(value * 100).toInt()}%',
     );
@@ -131,12 +131,11 @@ class SpeedometerPainter extends CustomPainter {
     final yPercentageText = (size.height - percentagePainter.height) * 0.5;
     percentagePainter.paint(canvas, Offset(xPercentageText, yPercentageText));
 
-// Draw "UPTIME" text
-    const uptimeSpan = TextSpan(
-      style: TextStyle(
+    // Draw "UPTIME" text
+    final uptimeSpan = TextSpan(
+      style: GoogleFonts.orbitron(
         color: Colors.black,
-        fontSize: 18, // Adjust the font size as needed
-        fontWeight: FontWeight.normal,
+        fontSize: 20,
       ),
       text: 'UPTIME',
     );
@@ -149,18 +148,18 @@ class SpeedometerPainter extends CustomPainter {
       maxWidth: size.width,
     );
     final xUptimeText = (size.width - uptimePainter.width) * 0.5;
-// Position the "UPTIME" text just below the percentage text
+    // Position the "UPTIME" text just below the percentage text
     final yUptimeText = yPercentageText +
         percentagePainter.height +
         5.0; // 5.0 is the padding between texts
     uptimePainter.paint(canvas, Offset(xUptimeText, yUptimeText));
 
-// Draw complex arrow
+    // Draw complex arrow
     final arrowAngle = math.pi + math.pi * value;
     final arrowLength = size.width / 2 * 0.8; // Adjust the length as needed
     const double arrowWidth = 10.0; // Adjust the width of the arrow's body
 
-// Calculate the base center of the arrow
+    // Calculate the base center of the arrow
     final baseX = size.width / 2 + arrowLength * math.cos(arrowAngle);
     final baseY = size.height + arrowLength * math.sin(arrowAngle);
 
@@ -189,6 +188,14 @@ class SpeedometerPainter extends CustomPainter {
     final arrowPaint = Paint()
       ..color = Colors.black
       ..style = PaintingStyle.fill; // Use fill to create a solid arrow
+
+// Shadow properties
+    final Color shadowColor = Colors.grey;
+    final double shadowElevation = 4.0;
+    final bool transparentOccluder = false;
+
+// Draw the shadow
+    canvas.drawShadow(path, shadowColor, shadowElevation, transparentOccluder);
 
     canvas.drawPath(path, arrowPaint);
 
