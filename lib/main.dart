@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/speedometer.dart';
-import 'package:visuals/clock.dart';
+import 'package:visuals/visuals/speedometer.dart';
+import 'package:visuals/visuals/clock.dart';
 import 'package:visuals/utils.dart';
 import 'package:visuals/theme.dart';
 
@@ -16,7 +16,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Visualization Sandbox',
-      theme: uptimeTheme,
+      theme: ThemeData.light(
+        useMaterial3: true,
+      ),
+      // darkTheme: ThemeData.dark(useMaterial3: true),
+      // themeMode: ThemeMode.system,
       home: const MyHomePage(title: 'Visualization Sandbox'),
     );
   }
@@ -69,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
         // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // foregroundColor: Theme.of(context).colorScheme.onPrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
@@ -93,9 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Speedometer(value: sampleUptime),
+            Speedometer(value: getUptime(sampleDay), size: 300),
             ProductivityClock(
-                size: 300, machineStates: sampleStates, startingHour: 8.0)
+                size: 300, machineStates: sampleDay, startingHour: 8.0)
           ],
         ),
       ),
