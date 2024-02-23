@@ -1,3 +1,5 @@
+import 'dart:math';
+
 const List<double> normalDay = [
   0.7,
   0.8,
@@ -142,9 +144,59 @@ const List<double> downDay = [
   0.15,
 ];
 
+const List<double> perfectDay = [
+  0.99,
+  0.99,
+  0.99,
+  0.95,
+  0.98,
+  0.99,
+  0.98,
+  0.97,
+  0.99,
+  0.99,
+  0.99,
+  0.99,
+  0.95,
+  0.95,
+  0.95,
+  0.99,
+  0.99,
+  0.99,
+  0.99,
+  0.99,
+  0.99,
+  0.99,
+  0.90,
+  0.90,
+  0.96,
+  0.99,
+  0.99,
+  0.995,
+  0.996,
+  0.996,
+  0.997,
+  0.99,
+  0.998,
+  0.99,
+  0.99,
+  0.994,
+  0.996,
+  0.998,
+  0.998,
+  0.998,
+  0.997,
+  0.99,
+  0.985,
+  0.99,
+  0.995,
+];
+
 double getUptime(List<double> states) {
   final double sum = states.reduce((a, b) => a + b);
   return sum / states.length;
 }
 
-const List<double> sampleDay = normalDay;
+const List<double> sampleDay = downDay;
+
+final List<double> dayValues = List.generate(28, (_) => Random().nextDouble());

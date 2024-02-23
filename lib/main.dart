@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:visuals/visuals/speedometer.dart';
 import 'package:visuals/visuals/clock.dart';
+import 'package:visuals/visuals/week.dart';
+import 'package:visuals/visuals/month.dart';
 import 'package:visuals/utils.dart';
-import 'package:visuals/theme.dart';
+import 'package:visuals/visuals/led.dart';
 
 void main() {
   runApp(const MyApp());
@@ -97,9 +99,56 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Speedometer(value: getUptime(sampleDay), size: 300),
-            ProductivityClock(
-                size: 300, machineStates: sampleDay, startingHour: 8.0)
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      const IndicatorLed(status: true, size: 40),
+                      Speedometer(value: getUptime(normalDay), size: 200),
+                      ProductivityClock(
+                          size: 150,
+                          machineStates: normalDay,
+                          startingHour: 8.0),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: WeekView(
+                      weekValues: const [0, 0.95, 0.7, 0.3, 0.6, 0.4, 0],
+                      width: 300),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MonthView(
+                          year: 2024, month: 2, dayValues: dayValues, size: 300)
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            /*
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ProductivityClock(
+                    size: 150, machineStates: downDay, startingHour: 8.0),
+                ProductivityClock(
+                    size: 150, machineStates: perfectDay, startingHour: 8.0),
+                ProductivityClock(
+                    size: 150,
+                    machineStates: normalDay.map((item) => item * 0.6).toList(),
+                    startingHour: 8.0),
+              ],
+            )
+            */
           ],
         ),
       ),

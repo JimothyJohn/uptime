@@ -2,6 +2,64 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/*
+I want a page with a navigation bar at the top that when clicked opens a navigation menu with the options Home, Nav, and About. The website should show a full image as the background of the website and have neutral dark theme with a modern font. The center of the background of the page will have the word Template in a bold script version of a modern font and will slowly fade into the background.
+*/
+
+class Indicator extends CustomPainter {
+  final double thickness;
+  final double startAngle;
+  final double sweepAngle;
+  final Color color;
+
+  const Indicator({
+    required this.thickness,
+    required this.startAngle,
+    required this.sweepAngle,
+    required this.color,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    // Draw color guide for arc
+    // Define the filled section as a path
+    final Offset center = Offset(size.height, size.height);
+    Path path = Path()
+      // Move to far bottom right of speedometer
+      ..moveTo((math.cos(startAngle) + 1) * size.height,
+          (1 - math.sin(startAngle)) * size.height)
+      // Move left to get thickness
+      // TODO: Relearn trig
+      // Half-width + (half-width - thickness) * cos(angle)
+      ..lineTo((size.height + (size.height - thickness) * math.cos(startAngle)),
+          (size.height + (size.height - thickness) * math.sin(-startAngle)))
+      // (math.cos(startAngle) + 1) * (size.height - thickness),
+      // (1 - math.sin(startAngle)) * (size.height - thickness))
+      // Arc up and left
+      ..arcTo(Rect.fromCircle(center: center, radius: size.height - thickness),
+          -startAngle, -sweepAngle, false)
+      // Move to outer part of speedometer
+      ..lineTo((math.cos(startAngle + sweepAngle) + 1) * size.height,
+          (1 - math.sin(startAngle + sweepAngle)) * size.height)
+      // Cleanly arc back to origin
+      ..arcToPoint(
+        Offset((math.cos(startAngle) + 1) * size.height,
+            (1 - math.sin(startAngle)) * size.height),
+        radius: Radius.circular(size.height),
+      )
+      ..close();
+
+    // Use the uptimeColor scheme for filling sections based on the state value
+    canvas.drawPath(path, paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
+  }
+}
+
 class Speedometer extends StatefulWidget {
   final double value; // Value should be between 0 and 1
   final double size;
@@ -25,7 +83,7 @@ class _SpeedometerState extends State<Speedometer>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 2000), // Total animation time
+      duration: const Duration(milliseconds: 1000), // Total animation time
       vsync: this,
     );
 
@@ -96,30 +154,66 @@ class SpeedometerPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
+    final arcPaint = Paint()
       ..color = colorScheme.onSurface
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 2;
+      ..strokeWidth = size.height / 29;
 
-    // Draw top arc of speedometer
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height * 2);
-    canvas.drawArc(rect, math.pi, math.pi, false, paint);
+    final double speedThickess = size.height / 6;
+    const double sweepAngle = math.pi / 4;
+    // const double startAngle = math.pi / 6;
+
+    /*
+        final fastPaint = Paint()
+      ..color = Colors.greenAccent.shade200
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = speedThickess;
+
+    final midPaint = Paint()
+      ..color = Colors.yellowAccent.shade400
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = speedThickess;
+
+    final slowPaint = Paint()
+      ..color = Colors.redAccent.shade200
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = speedThickess;
+    final innerRect = Rect.fromLTWH(speedThickess / 2, speedThickess / 2,
+        size.width - speedThickess / 2, (size.height * 2) - speedThickess / 2);
+    
+    canvas.drawArc(innerRect, 0, -math.pi / 8, false, fastPaint);
+    canvas.drawArc(innerRect, -math.pi / 8, -math.pi / 8, false, midPaint);
+    canvas.drawArc(innerRect, -math.pi / 4, -math.pi / 8, false, slowPaint);
+    */
 
     // Draw color guide for arc
     // Define the filled section as a path
-    final Offset center = Offset(size.width / 2, size.height / 2);
-    final greenPaint = Paint();
-    Path greenPath = Path()
-      // Move to far bottom right of speedometer
-      ..moveTo(size.width, size.height)
-      ..lineTo(size.width - 20, size.height)
-      ..lineTo(size.width - 20, size.height - 30)
-      // ..arcTo(Rect.fromCircle(center: center, radius: size.width / 2 - 20), 0, math.pi / 4, false)
-      ..close();
+    Indicator(
+      color: Colors.greenAccent.shade100,
+      thickness: speedThickess,
+      startAngle: 0,
+      sweepAngle: sweepAngle,
+    ).paint(canvas, size);
 
-    // Use the uptimeColor scheme for filling sections based on the state value
-    greenPaint.color = Colors.greenAccent.shade200;
-    canvas.drawPath(greenPath, greenPaint);
+    Indicator(
+      color: Colors.yellowAccent.shade100,
+      thickness: speedThickess,
+      startAngle: sweepAngle,
+      sweepAngle: sweepAngle,
+    ).paint(canvas, size);
+
+    Indicator(
+      color: Colors.redAccent.shade100,
+      thickness: speedThickess,
+      startAngle: 2 * sweepAngle,
+      sweepAngle: sweepAngle,
+    ).paint(canvas, size);
+
+    // Draw top arc of speedometer
+    // Start at the top left (0,0) (x,y) and make a rectangle the size of a full circle
+    // Draw a 180 degree arc starting from the left
+    final outerRect = Rect.fromLTWH(0, 0, size.width, size.height * 2);
+    canvas.drawArc(outerRect, 0, -math.pi, false, arcPaint);
 
     // Draw ticks
     for (int i = 0; i <= 10; i++) {
@@ -134,27 +228,6 @@ class SpeedometerPainter extends CustomPainter {
       final y2 = y1 - (size.width / 20) * math.sin(math.pi + angle);
       canvas.drawLine(Offset(x1, y1), Offset(x2, y2), tickPaint);
     }
-
-    // Draw percentage text
-    final percentageSpan = TextSpan(
-      style: GoogleFonts.orbitron(
-          color: colorScheme.onSurface,
-          fontSize: value < 0.3 ? size.width / 15 : size.width / 5 * value,
-          fontWeight: FontWeight.bold),
-      text: '${(value * 100).toInt()}%',
-    );
-    final percentagePainter = TextPainter(
-      text: percentageSpan,
-      textDirection: TextDirection.ltr,
-    );
-    percentagePainter.layout(
-      minWidth: 0,
-      maxWidth: size.width,
-    );
-    final xPercentageText = (size.width - percentagePainter.width) * 0.5;
-    final double yPercentageText =
-        (size.height - percentagePainter.height) * 0.7;
-    percentagePainter.paint(canvas, Offset(xPercentageText, yPercentageText));
 
     /*
     // Draw "UPTIME" text
@@ -186,40 +259,37 @@ class SpeedometerPainter extends CustomPainter {
     // Draw complex arrow
     final arrowAngle = math.pi + math.pi * value;
     final arrowLength = size.width / 2 * 0.8; // Adjust the length as needed
-    const double arrowWidth = 10.0; // Adjust the width of the arrow's body
+    const double arrowWidth = 5.0; // Adjust the width of the arrow's body
 
     // Calculate the base center of the arrow
     final baseX = size.width / 2 + arrowLength * math.cos(arrowAngle);
     final baseY = size.height + arrowLength * math.sin(arrowAngle);
-
-    // Arrow body
-    final path = Path();
-    path.moveTo(size.width / 2, size.height); // Start at the bottom center
-
-    // Move to the left side of the base of the arrow
-    path.lineTo(
-      baseX - arrowWidth * math.cos(arrowAngle + math.pi / 2),
-      baseY - arrowWidth * math.sin(arrowAngle + math.pi / 2),
-    );
 
     // Create the triangular extension (tip of the arrow)
     final tipX = size.width / 2 +
         (arrowLength + 20) *
             math.cos(arrowAngle); // Extend the tip beyond the base
     final tipY = size.height + (arrowLength + 20) * math.sin(arrowAngle);
-    path.lineTo(tipX, tipY); // Pointy top
 
-    // Move to the right side of the base of the arrow
-    path.lineTo(
-      baseX + arrowWidth * math.cos(arrowAngle + math.pi / 2),
-      baseY + arrowWidth * math.sin(arrowAngle + math.pi / 2),
-    );
-
-    // Close the path to create a filled shape
-    path.close();
+    // Arrow body
+    final path = Path()
+      ..moveTo(size.width / 2, size.height) // Start at the bottom center
+      // Move to the left side of the base of the arrow
+      ..lineTo(
+        baseX - arrowWidth * math.cos(arrowAngle + math.pi / 2),
+        baseY - arrowWidth * math.sin(arrowAngle + math.pi / 2),
+      )
+      ..lineTo(tipX, tipY) // Pointy top
+      // Move to the right side of the base of the arrow
+      ..lineTo(
+        baseX + arrowWidth * math.cos(arrowAngle + math.pi / 2),
+        baseY + arrowWidth * math.sin(arrowAngle + math.pi / 2),
+      )
+      // Close the path to create a filled shape
+      ..close();
 
     final arrowPaint = Paint()
-      ..color = colorScheme.onSurface
+      ..color = Colors.orangeAccent.shade400
       ..style = PaintingStyle.fill; // Use fill to create a solid arrow
 
     // Shadow properties
@@ -230,6 +300,35 @@ class SpeedometerPainter extends CustomPainter {
     // Draw the shadow
     canvas.drawShadow(path, shadowColor, shadowElevation, transparentOccluder);
     canvas.drawPath(path, arrowPaint);
+
+    // Draw percentage text
+    final percentageSpan = TextSpan(
+      style: GoogleFonts.orbitron().copyWith(
+          color: colorScheme.onSurface,
+          shadows: [
+            Shadow(
+              offset: const Offset(0, 0), // Horizontal and vertical offset
+              blurRadius: 10, // How much the shadow is blurred
+              color: Color.fromRGBO(
+                  130, 200, 130, value), // Shadow color with opacity
+            )
+          ],
+          fontSize: value < 0.5 ? size.width / 6 : size.width / 4 * value,
+          fontWeight: FontWeight.bold),
+      text: '${(value * 100).toInt()}%',
+    );
+    final percentagePainter = TextPainter(
+      text: percentageSpan,
+      textDirection: TextDirection.ltr,
+    );
+    percentagePainter.layout(
+      minWidth: 0,
+      maxWidth: size.width,
+    );
+    final xPercentageText = (size.width - percentagePainter.width) * 0.5;
+    final double yPercentageText =
+        (size.height - percentagePainter.height) * 0.7;
+    percentagePainter.paint(canvas, Offset(xPercentageText, yPercentageText));
 
     // Draw rounded end at the bottom
     final roundedEndPaint = Paint()
