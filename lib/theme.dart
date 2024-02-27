@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Created with https://m2.material.io/design/color/the-color-system.html#tools-for-picking-colors
-const ColorScheme uptimeColor = ColorScheme(
+const ColorScheme uptimeColorScheme = ColorScheme(
   primary: Color(0xffdddddd),
   onPrimary: Color(0xff222222),
   secondary: Color(0xffdddddd),
@@ -39,11 +39,19 @@ const ColorScheme uptimeColorDark = ColorScheme(
   brightness: Brightness.dark, // Indicates this is a dark theme
 );
 
-final TextTheme uptimeText = GoogleFonts.orbitronTextTheme();
+final TextTheme textTheme = GoogleFonts.orbitronTextTheme();
+
+final TextStyle textStyle = GoogleFonts.orbitron();
+
+final darkTheme =
+    ThemeData.dark(useMaterial3: true).copyWith(textTheme: textTheme);
+
+final lightTheme =
+    ThemeData.light(useMaterial3: true).copyWith(textTheme: textTheme);
 
 final ThemeData uptimeLightTheme = ThemeData(
-  colorScheme: uptimeColor,
-  textTheme: uptimeText,
+  colorScheme: uptimeColorScheme,
+  textTheme: textTheme,
   pageTransitionsTheme: const PageTransitionsTheme(
     builders: {
       TargetPlatform.android: OpenUpwardsPageTransitionsBuilder(),
@@ -54,7 +62,7 @@ final ThemeData uptimeLightTheme = ThemeData(
 
 final ThemeData uptimeTheme = ThemeData(
   colorScheme: uptimeColorDark,
-  textTheme: uptimeText,
+  textTheme: textTheme,
   pageTransitionsTheme: const PageTransitionsTheme(
     builders: {
       TargetPlatform.android: OpenUpwardsPageTransitionsBuilder(),
@@ -62,3 +70,6 @@ final ThemeData uptimeTheme = ThemeData(
     },
   ),
 );
+
+const Color uptimeGreen = Color.fromRGBO(0, 220, 100, 1.0);
+const Color uptimeRed = Color.fromRGBO(220, 0, 100, 1.0);

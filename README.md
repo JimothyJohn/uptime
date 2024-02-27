@@ -1,16 +1,27 @@
 # visuals
 
-A new Flutter project.
+Visual sandbox for Uptime application.
 
-## Getting Started
+### Quickstart
 
-This project is a starting point for a Flutter application.
+```bash
+utils/Quickstart.sh
+```
 
-A few resources to get you started if this is your first Flutter project:
+## Examples
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Day (dark mode)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![Day visuals](docs/day.png)
+
+Month (light mode)
+
+![Month visuals](docs/month.png)
+
+### TODO
+
+* Add grow-on-click to all visuals
+
+* Fix text size on month chart
+
+* Add financial visuals

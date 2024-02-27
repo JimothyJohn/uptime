@@ -1,10 +1,10 @@
 import 'dart:math';
+import 'package:flutter/material.dart';
+import 'package:visuals/theme.dart';
 
 const List<double> normalDay = [
   0.7,
   0.8,
-  0.9,
-  0.95,
   0.98,
   0.99,
   0.98,
@@ -51,8 +51,6 @@ const List<double> normalDay = [
 const List<double> upDay = [
   0.9,
   0.8,
-  0.9,
-  0.95,
   0.98,
   0.99,
   0.98,
@@ -102,8 +100,6 @@ const List<double> downDay = [
   0.1,
   0.15,
   0.18,
-  0.19,
-  0.18,
   0.17,
   0.19,
   0.1,
@@ -148,8 +144,6 @@ const List<double> perfectDay = [
   0.99,
   0.99,
   0.99,
-  0.95,
-  0.98,
   0.99,
   0.98,
   0.97,
@@ -199,4 +193,20 @@ double getUptime(List<double> states) {
 
 const List<double> sampleDay = downDay;
 
-final List<double> dayValues = List.generate(28, (_) => Random().nextDouble());
+final List<double> dayValues = List.generate(31, (_) => Random().nextDouble());
+
+Color uptimeColor(double fillExtent, Color color) {
+  final List<double> rgbLevels = [
+    uptimeRed.red.toDouble(),
+    uptimeGreen.green.toDouble(),
+    uptimeGreen.blue.toDouble(),
+    0.9
+  ];
+  return fillExtent > 0
+      ? Color.fromRGBO(
+          (rgbLevels[0] * fillExtent).toInt(),
+          (rgbLevels[1] * (1 - fillExtent)).toInt(),
+          rgbLevels[2].toInt(),
+          rgbLevels[3])
+      : color; // As
+}

@@ -20,9 +20,9 @@ class _IndicatorLedState extends State<IndicatorLed>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
-      lowerBound: 0.2,
+      lowerBound: 0.5,
       upperBound: 0.95,
     )..repeat(
         reverse:
@@ -68,7 +68,10 @@ class _LedPainter extends CustomPainter {
       ..isAntiAlias = true;
 
     // Update the glow to use the animated glowOpacity
-    paint.color = (status ? Colors.green : Colors.red).withOpacity(glowOpacity);
+    paint.color = (status
+            ? Color.fromRGBO(0, 220, 100, 1.0)
+            : Color.fromRGBO(220, 0, 100, 1.0))
+        .withOpacity(glowOpacity);
     paint.maskFilter = MaskFilter.blur(BlurStyle.normal, size.width / 6);
     canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);
 
@@ -80,7 +83,10 @@ class _LedPainter extends CustomPainter {
     canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);
 
     // Draw the LED inner circle
-    paint.color = status ? Colors.green : Colors.red;
+    paint.color = (status
+            ? const Color.fromRGBO(0, 220, 100, 1.0)
+            : const Color.fromRGBO(220, 0, 100, 1.0))
+        .withOpacity(glowOpacity);
     canvas.drawCircle(size.center(Offset.zero), size.width / 2 * 0.8, paint);
 
     // Draw the glare

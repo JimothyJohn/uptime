@@ -1,26 +1,33 @@
-import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/utils.dart';
+import 'package:visuals/utils.dart'; // Assuming uptimeColor function is defined here
+import 'dart:math' as math;
 
-class Clock extends StatefulWidget {
+enum ShiftViewMode {
+  bar,
+  clock,
+}
+
+class ShiftView extends StatefulWidget {
   final List<double> machineStates;
   final double size;
   final double startingHour;
+  final ShiftViewMode viewMode;
 
-  const Clock({
+  const ShiftView({
     Key? key,
-    required this.size,
     required this.machineStates,
+    required this.size,
     required this.startingHour,
-  })  : assert(machineStates.length <= 60),
-        super(key: key);
+    this.viewMode = ShiftViewMode.clock,
+  }) : super(key: key);
 
   @override
-  _ClockState createState() => _ClockState();
+  _ShiftViewState createState() => _ShiftViewState();
 }
 
-class _ClockState extends State<Clock> with SingleTickerProviderStateMixin {
+class _ShiftViewState extends State<ShiftView>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
@@ -65,17 +72,22 @@ class _ClockState extends State<Clock> with SingleTickerProviderStateMixin {
       },
       child: Center(
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
+          duration: const Duration(milliseconds: 500),
           curve: Curves.easeInOut,
           width: isExpanded ? widget.size * 2 : widget.size,
           height: isExpanded ? widget.size * 2 : widget.size,
           child: CustomPaint(
-            painter: ClockPainter(
-              widget.machineStates,
-              widget.startingHour,
-              Theme.of(context),
-              _animation.value, //
-            ),
+            painter: widget.viewMode == ShiftViewMode.clock
+                ? ProductivityClockPainter(
+                    machineStates: widget.machineStates,
+                    startingHour: widget.startingHour,
+                    animationValue: _animation.value,
+                    theme: Theme.of(context))
+                : ProductivityBarChartPainter(
+                    machineStates: widget.machineStates,
+                    startingHour: widget.startingHour,
+                    theme: Theme.of(context),
+                    animationValue: _animation.value),
           ),
         ),
       ),
@@ -83,26 +95,84 @@ class _ClockState extends State<Clock> with SingleTickerProviderStateMixin {
   }
 }
 
-class ClockPainter extends CustomPainter {
+// ProductivityBarChartPainter and ProductivityClockPainter need to be adapted or created if not existing
+class ProductivityBarChartPainter extends CustomPainter {
   final List<double> machineStates;
   final double startingHour;
   final ThemeData theme;
   final double animationValue; // Current animation value
 
-  ClockPainter(
-    this.machineStates,
-    this.startingHour,
-    this.theme,
-    this.animationValue, // Accept animationValue in constructor
-  );
+  ProductivityBarChartPainter(
+      {required this.machineStates,
+      required this.startingHour,
+      required this.animationValue, // Accept animationValue in constructor
+      required this.theme});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final int sectionsToDraw = animationValue.floor(); // Convert to integer
+
+    final Paint paint = Paint()..style = PaintingStyle.fill;
+    final double barWidth =
+        size.width / 60; // There are 60 sections for a full circle.
+
+    // Loop through each machine state and draw a bar for it.
+    for (int i = 0; i < sectionsToDraw; i++) {
+      final double fillExtent = 1 - machineStates[i]; // Value between 0 and 1
+      final double barHeight = size.height *
+          machineStates[i]; // Calculate bar height based on the machine state.
+      final double xStart = i * barWidth;
+      final double yStart = size.height -
+          barHeight; // Start drawing from the bottom of the canvas.
+
+      // Draw the bar
+      paint.color = uptimeColor(fillExtent, theme.colorScheme.surface);
+
+      canvas.drawRect(
+          Rect.fromLTWH(xStart, yStart, barWidth, barHeight), paint);
+    }
+
+    // Optionally draw ticks and labels
+    final textStyle =
+        GoogleFonts.orbitron(color: theme.colorScheme.onSurface, fontSize: 12);
+    final textPainter = TextPainter(
+        textAlign: TextAlign.center, textDirection: TextDirection.ltr);
+
+    for (int i = 0; i <= machineStates.length / 5; i++) {
+      double xPosition = (size.width / 12) * i;
+      // Draw hour labels
+      final String label = "${(startingHour + i) % 12}";
+      textPainter.text =
+          TextSpan(text: label == "0" ? "12" : label, style: textStyle);
+      textPainter.layout();
+      textPainter.paint(
+          canvas, Offset(xPosition - textPainter.width / 2, size.height));
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class ProductivityClockPainter extends CustomPainter {
+  final List<double> machineStates;
+  final double startingHour;
+  final ThemeData theme;
+  final double animationValue; // Current animation value
+
+  ProductivityClockPainter(
+      {required this.machineStates,
+      required this.startingHour,
+      required this.animationValue, // Accept animationValue in constructor
+      required this.theme});
 
   @override
   void paint(Canvas canvas, Size size) {
     // Existing painting code, modified to use animationValue
     // Use animationValue to determine how many sections to draw
     // For example, if animationValue is 30, draw the first 30 sections
-    int sectionsToDraw = animationValue.floor(); // Convert to integer
     // Convert hours to radians (15 degrees per hour, π/12 radians per hour)
+    int sectionsToDraw = animationValue.floor(); // Convert to integer
 
     final Paint paint = Paint()..style = PaintingStyle.fill;
     final Offset center = Offset(size.width / 2, size.height / 2);
@@ -110,7 +180,7 @@ class ClockPainter extends CustomPainter {
     final double radius = size.width / 2 * 0.9; // 90% of the full radius
 
     // Draw the 60 12-minute sections to fill the clock
-    for (int i = 0; i < sectionsToDraw; i++) {
+    for (int i = 0; i < machineStates.length; i++) {
       final double startingAngleOffset = startingHour * (math.pi / 6);
       final startAngle =
           (2 * math.pi / 60 * i) - math.pi / 2 + startingAngleOffset;
@@ -212,7 +282,5 @@ class ClockPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

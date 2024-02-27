@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:visuals/theme.dart';
 
 /*
 I want a page with a navigation bar at the top that when clicked opens a navigation menu with the options Home, Nav, and About. The website should show a full image as the background of the website and have neutral dark theme with a modern font. The center of the background of the page will have the word Template in a bold script version of a modern font and will slowly fade into the background.
@@ -138,8 +139,7 @@ class _SpeedometerState extends State<Speedometer>
         return CustomPaint(
           size: Size(widget.size,
               widget.size / 2), // You can adjust the size as needed
-          painter: SpeedometerPainter(
-              _animation.value, Theme.of(context).colorScheme),
+          painter: SpeedometerPainter(_animation.value, Theme.of(context)),
         );
       },
     );
@@ -148,64 +148,33 @@ class _SpeedometerState extends State<Speedometer>
 
 class SpeedometerPainter extends CustomPainter {
   final double value;
-  final ColorScheme colorScheme; // Example starting time
+  final ThemeData theme; // Example starting time
 
-  SpeedometerPainter(this.value, this.colorScheme);
+  SpeedometerPainter(this.value, this.theme);
 
   @override
   void paint(Canvas canvas, Size size) {
     final arcPaint = Paint()
-      ..color = colorScheme.onSurface
+      ..color = theme.colorScheme.onSurface
       ..style = PaintingStyle.stroke
       ..strokeWidth = size.height / 29;
 
     final double speedThickess = size.height / 6;
-    const double sweepAngle = math.pi / 4;
-    // const double startAngle = math.pi / 6;
-
-    /*
-        final fastPaint = Paint()
-      ..color = Colors.greenAccent.shade200
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = speedThickess;
-
-    final midPaint = Paint()
-      ..color = Colors.yellowAccent.shade400
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = speedThickess;
-
-    final slowPaint = Paint()
-      ..color = Colors.redAccent.shade200
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = speedThickess;
-    final innerRect = Rect.fromLTWH(speedThickess / 2, speedThickess / 2,
-        size.width - speedThickess / 2, (size.height * 2) - speedThickess / 2);
-    
-    canvas.drawArc(innerRect, 0, -math.pi / 8, false, fastPaint);
-    canvas.drawArc(innerRect, -math.pi / 8, -math.pi / 8, false, midPaint);
-    canvas.drawArc(innerRect, -math.pi / 4, -math.pi / 8, false, slowPaint);
-    */
+    const double sweepAngle = math.pi / 3;
 
     // Draw color guide for arc
     // Define the filled section as a path
     Indicator(
-      color: Colors.greenAccent.shade100,
+      color: uptimeGreen.withOpacity(0.7),
       thickness: speedThickess,
       startAngle: 0,
       sweepAngle: sweepAngle,
     ).paint(canvas, size);
 
     Indicator(
-      color: Colors.yellowAccent.shade100,
+      color: uptimeRed.withOpacity(0.7),
       thickness: speedThickess,
       startAngle: sweepAngle,
-      sweepAngle: sweepAngle,
-    ).paint(canvas, size);
-
-    Indicator(
-      color: Colors.redAccent.shade100,
-      thickness: speedThickess,
-      startAngle: 2 * sweepAngle,
       sweepAngle: sweepAngle,
     ).paint(canvas, size);
 
@@ -218,7 +187,7 @@ class SpeedometerPainter extends CustomPainter {
     // Draw ticks
     for (int i = 0; i <= 10; i++) {
       final tickPaint = Paint()
-        ..color = colorScheme.onSurface
+        ..color = theme.colorScheme.onSurface
         ..strokeWidth = 2;
       final angle = math.pi / 10 * i;
       final x1 = size.width / 2 + size.width / 2 * math.cos(math.pi + angle);
@@ -289,11 +258,11 @@ class SpeedometerPainter extends CustomPainter {
       ..close();
 
     final arrowPaint = Paint()
-      ..color = Colors.orangeAccent.shade400
+      ..color = theme.colorScheme.onSurface
       ..style = PaintingStyle.fill; // Use fill to create a solid arrow
 
     // Shadow properties
-    const Color shadowColor = Colors.grey;
+    const Color shadowColor = Colors.green;
     const double shadowElevation = 4.0;
     const bool transparentOccluder = false;
 
@@ -304,7 +273,7 @@ class SpeedometerPainter extends CustomPainter {
     // Draw percentage text
     final percentageSpan = TextSpan(
       style: GoogleFonts.orbitron().copyWith(
-          color: colorScheme.onSurface,
+          color: theme.colorScheme.onSurface,
           shadows: [
             Shadow(
               offset: const Offset(0, 0), // Horizontal and vertical offset
@@ -332,7 +301,7 @@ class SpeedometerPainter extends CustomPainter {
 
     // Draw rounded end at the bottom
     final roundedEndPaint = Paint()
-      ..color = colorScheme.onSurface
+      ..color = theme.colorScheme.onSurface
       ..style = PaintingStyle.fill;
 
     // Draw the circle at the base of the arrow to create a rounded end

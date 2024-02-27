@@ -1,88 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:visuals/visuals/speedometer.dart';
+import 'package:visuals/visuals/week_chart.dart';
+import 'package:visuals/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class WeekView extends StatelessWidget {
-  final List<double> weekValues; // Expects a list of 7 doubles between 0 and 1
-  final double width; // User-provided width
-
-  const WeekView({
-    Key? key,
-    required this.weekValues,
-    required this.width,
-  })  : assert(weekValues.length == 7),
-        super(key: key);
+class WeekPage extends StatefulWidget {
+  const WeekPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Calculate square size based on width and determine height dynamically
-    final double squareSize = width / 7;
-    final double height = squareSize + 20; // Adding additional space for text
-
-    return CustomPaint(
-      size:
-          Size(width, height), // Dynamically set size to maintain square shape
-      painter: WeekViewPainter(
-          weekValues: weekValues, colorScheme: Theme.of(context).colorScheme),
-    );
-  }
+  State<WeekPage> createState() => _WeekPageState();
 }
 
-class WeekViewPainter extends CustomPainter {
-  final List<double> weekValues;
-  final List<String> daysOfWeek = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-  final ColorScheme colorScheme;
-
-  WeekViewPainter({
-    required this.weekValues,
-    required this.colorScheme,
-  });
-
+class _WeekPageState extends State<WeekPage> {
+  bool isDarkModeEnabled = false;
   @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..style = PaintingStyle.fill;
-    final double squareSize =
-        size.width / 7; // Divide canvas width into 7 parts
-    const double textHeight = 20; // Height allocated for text, adjust if needed
-
-    for (int i = 0; i < weekValues.length; i++) {
-      // Set the color opacity based on the week value for each day
-      paint.color = Colors.green.withOpacity(weekValues[i]);
-
-      final Rect rect = Rect.fromLTWH(
-        i * squareSize, // X position
-        textHeight, // Y position adjusted to leave space for the text
-        squareSize, // Width of each square
-        size.height -
-            textHeight, // Adjust height for squares to leave space for text
-      );
-
-      canvas.drawRect(rect, paint);
-
-      // Draw the day of the week text, centered within the square
-      final textSpan = TextSpan(
-        text: daysOfWeek[i],
-        style: GoogleFonts.orbitron(
-          color: colorScheme.onSurface,
-          fontWeight: FontWeight.bold,
-          fontSize: squareSize / 4, // Adjust font size based on square size
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Speedometer(value: getUptime(dayValues), size: 250),
+                      Text("Efficiency",
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Text("Weekly Productivity",
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                      WeekView(
+                          weekValues: const [0, 0.95, 0.7, 0.3, 0.6, 0.4, 0],
+                          width: 300),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
-      );
-      final textPainter = TextPainter(
-        text: textSpan,
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-
-      final textX = rect.left + (squareSize - textPainter.width) / 2;
-      final textY = rect.top +
-          (size.height - textHeight - textPainter.height) /
-              2; // Center text vertically in the square
-      final offset = Offset(textX, textY);
-
-      textPainter.paint(canvas, offset);
-    }
+      ),
+    )
+        /*
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+      */
+        ;
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }

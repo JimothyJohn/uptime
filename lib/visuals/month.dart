@@ -1,94 +1,144 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter/material.dart';
+import 'package:visuals/visuals/speedometer.dart';
+import 'package:visuals/visuals/unified_month.dart';
+import 'package:visuals/visuals/month_chart.dart';
+import 'package:visuals/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class MonthView extends StatelessWidget {
-  final int year;
-  final int month;
-  final List<double> dayValues;
-  final double size; // User-defined size for the widget
+class MonthPage extends StatefulWidget {
+  final String title;
 
-  MonthView({
-    Key? key,
-    required this.year,
-    required this.month,
-    required this.dayValues,
-    required this.size, // Include size in the constructor
-  })  : assert(month > 0 && month < 13),
-        // assert(dayValues.length == DateTime(year, month + 1, 0).day),
-        super(key: key);
+  const MonthPage({Key? key, required this.title}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    // Use the provided size for the CustomPaint
-    return CustomPaint(
-      size: Size(size, size),
-      painter: _MonthViewPainter(
-        firstWeekdayOfMonth: DateTime(year, month, 1).weekday,
-        daysInMonth: DateTime(year, month + 1, 0).day,
-        dayValues: dayValues,
-        colorScheme: Theme.of(context).colorScheme,
-      ),
-    );
-  }
+  State<MonthPage> createState() => _MonthPageState();
 }
 
-class _MonthViewPainter extends CustomPainter {
-  final int firstWeekdayOfMonth;
-  final int daysInMonth;
-  final List<double> dayValues;
-  final ColorScheme colorScheme;
-
-  _MonthViewPainter({
-    required this.firstWeekdayOfMonth,
-    required this.daysInMonth,
-    required this.dayValues,
-    required this.colorScheme,
-  });
-
+class _MonthPageState extends State<MonthPage> {
+  bool isDarkModeEnabled = false;
   @override
-  void paint(Canvas canvas, Size size) {
-    final Paint paint = Paint()..style = PaintingStyle.fill;
-    final double squareSize = size.width / 7; // 7 days of the week
-
-    // Calculate initial offset for the first square based on the starting weekday
-    int column = firstWeekdayOfMonth - 1; // Adjust for zero-based index
-    int row = 0;
-
-    for (int i = 0; i < dayValues.length; i++) {
-      final double x = column * squareSize;
-      final double y = row * squareSize;
-
-      // Draw the square for the day
-      paint.color = Colors.green.withOpacity(dayValues[i]);
-      canvas.drawRect(Rect.fromLTWH(x, y, squareSize, squareSize), paint);
-
-      // Draw the day number
-      final dayNumberText = TextSpan(
-        text: '${i + 1}',
-        style: GoogleFonts.orbitron(
-            color: colorScheme.onSurface,
-            fontSize: 12,
-            fontWeight: FontWeight.bold),
-      );
-      final textPainter = TextPainter(
-        text: dayNumberText,
-        textDirection: TextDirection.ltr,
-      );
-      textPainter.layout();
-      final numberOffset = Offset(x + (squareSize - textPainter.width) / 2,
-          y + (squareSize - textPainter.height) / 2);
-      textPainter.paint(canvas, numberOffset);
-
-      column++;
-      if (column >= 7) {
-        column = 0;
-        row++;
-      }
-    }
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Column(
+                    children: [
+                      Speedometer(value: getUptime(dayValues), size: 250),
+                      Text("Efficiency",
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  /*
+                  Column(
+                    children: [
+                      Text("Weekly Productivity",
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                      WeekView(
+                          weekValues: const [0, 0.95, 0.7, 0.3, 0.6, 0.4, 0],
+                          width: 300),
+                    ],
+                  ),
+                  */
+                  Column(
+                    children: [
+                      Text("Daily Trend",
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                      UnifiedMonthView(
+                        year: 2024,
+                        month: 2,
+                        dayValues: dayValues,
+                        size: 300,
+                        viewMode: MonthViewMode.bar,
+                      )
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: Column(
+                children: [
+                  Text("Monthly Productivity",
+                      style: GoogleFonts.orbitron(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          shadows: [
+                            const Shadow(
+                              offset: Offset(
+                                  0, 0), // Horizontal and vertical offset
+                              blurRadius: 10, // How much the shadow is blurred
+                              color: Color.fromRGBO(130, 200, 130,
+                                  0.1), // Shadow color with opacity
+                            )
+                          ],
+                          fontWeight: FontWeight.bold)),
+                  MonthView(
+                      year: 2024, month: 3, dayValues: dayValues, size: 200)
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    )
+        /*
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+      */
+        ;
   }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
