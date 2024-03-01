@@ -12,16 +12,8 @@ utils/Quickstart.sh
 
 Day (dark mode)
 
-![Day visuals](docs/day.png)
-
-Month (light mode)
-
-![Month visuals](docs/month.png)
+![Day visuals](docs/dashboard.png)
 
 ### TODO
 
-* Add grow-on-click to all visuals
-
-* Fix text size on month chart
-
-* Add financial visuals
+* Add tests

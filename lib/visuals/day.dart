@@ -2,121 +2,183 @@ import 'package:flutter/material.dart';
 import 'package:visuals/visuals/speedometer.dart';
 import 'package:visuals/visuals/clock.dart';
 import 'package:visuals/visuals/shift_bar.dart';
+import 'package:visuals/visuals/dollars.dart';
 import 'package:visuals/utils.dart';
 import 'package:visuals/visuals/led.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:visuals/theme.dart';
 
-class DayPage extends StatefulWidget {
+class DayPage extends StatelessWidget {
   const DayPage({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<DayPage> createState() => _DayPageState();
-}
-
-class _DayPageState extends State<DayPage> {
-  bool isDarkModeEnabled = false;
-  @override
   Widget build(BuildContext context) {
+    final TextStyle rowTextStyle = GoogleFonts.orbitron(
+        color: Theme.of(context).colorScheme.onSurface,
+        shadows: [
+          const Shadow(
+            offset: Offset(0, 0), // Horizontal and vertical offset
+            blurRadius: 10, // How much the shadow is blurred
+            color:
+                Color.fromRGBO(130, 200, 130, 0.1), // Shadow color with opacity
+          )
+        ],
+        fontWeight: FontWeight.bold);
     return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            Speedometer(value: getUptime(perfectDay), size: 250),
-            Text("Efficiency",
-                style: GoogleFonts.orbitron(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    shadows: [
-                      const Shadow(
-                        offset: Offset(0, 0), // Horizontal and vertical offset
-                        blurRadius: 10, // How much the shadow is blurred
-                        color: Color.fromRGBO(
-                            130, 200, 130, 0.1), // Shadow color with opacity
-                      )
-                    ],
-                    fontWeight: FontWeight.bold)),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsets.all(10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.all(15.0),
-                      child: IndicatorLed(status: false, size: 25),
-                    ),
-                    Column(
-                      children: [
-                        Clock(
-                            size: 150,
-                            machineStates: normalDay,
-                            startingHour: 8.0),
-                        Text("Shift",
-                            textAlign: TextAlign.center,
-                            style: GoogleFonts.orbitron(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                shadows: [
-                                  const Shadow(
-                                    offset: Offset(
-                                        0, 0), // Horizontal and vertical offset
-                                    blurRadius:
-                                        10, // How much the shadow is blurred
-                                    color: Color.fromRGBO(130, 200, 130,
-                                        0.1), // Shadow color with opacity
-                                  )
-                                ],
-                                fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                    width: 100,
+                    child: Text("Name",
+                        textAlign: TextAlign.center, style: rowTextStyle)),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 30,
+                  child: Text("Status",
+                      textAlign: TextAlign.center, style: rowTextStyle),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      Text("Hourly Trend",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                      ProductivityBarChart(
-                        size: 300,
-                        machineStates: normalDay,
-                        startingHour: 8.0,
-                      ),
-                    ],
-                  ),
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 80,
+                  child: Text("Uptime",
+                      textAlign: TextAlign.center, style: rowTextStyle),
+                ),
               ),
-            ),
-          ],
-        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 200,
+                  child: Text("Shift",
+                      textAlign: TextAlign.center, style: rowTextStyle),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 100,
+                  child: Text("Production",
+                      textAlign: TextAlign.center, style: rowTextStyle),
+                ),
+              ),
+            ],
+          ),
+          const Expanded(
+            child: SingleChildScrollView(
+                child: Column(children: [
+              MachineRow(production: perfectDay),
+              MachineRow(production: normalDay),
+              MachineRow(production: downDay),
+              MachineRow(production: upDay),
+              MachineRow(production: perfectDay),
+              MachineRow(production: normalDay),
+              MachineRow(production: downDay),
+              MachineRow(production: upDay),
+              MachineRow(production: perfectDay),
+              MachineRow(production: normalDay),
+              MachineRow(production: downDay),
+              MachineRow(production: upDay),
+            ])),
+          )
+        ],
       ),
-    )
-        /*
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      */
-        ;
+    );
+  }
+}
+
+class MachineRow extends StatelessWidget {
+  final List<double> production;
+  const MachineRow({Key? key, required this.production}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+              width: 620,
+              child: Divider(
+                  indent: 20,
+                  endIndent: 20,
+                  color: Theme.of(context).colorScheme.onSurface)),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 100,
+                  child: Text("Need arg",
+                      style: GoogleFonts.orbitron(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          shadows: [
+                            const Shadow(
+                              offset: Offset(
+                                  0, 0), // Horizontal and vertical offset
+                              blurRadius: 10, // How much the shadow is blurred
+                              color: Color.fromRGBO(130, 200, 130,
+                                  0.1), // Shadow color with opacity
+                            )
+                          ],
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 30,
+                  child: IndicatorLed(
+                      status: getUptime(production) > .6, size: 30),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 80,
+                  child: Speedometer(value: getUptime(production), size: 80),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 200,
+                  child: ProductivityBarChart(
+                    size: 200,
+                    machineStates: production,
+                    startingHour: 8.0,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 100,
+                  child: MoneyValueText(
+                      hours: perfectDay.length / 5,
+                      hourlyValue: 100,
+                      uptime: getUptime(production)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

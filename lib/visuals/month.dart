@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:visuals/visuals/speedometer.dart';
-import 'package:visuals/visuals/unified_month.dart';
 import 'package:visuals/visuals/month_chart.dart';
 import 'package:visuals/utils.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:visuals/visuals/dollars.dart';
 
 class MonthPage extends StatefulWidget {
   final String title;
@@ -45,6 +45,10 @@ class _MonthPageState extends State<MonthPage> {
                                 )
                               ],
                               fontWeight: FontWeight.bold)),
+                      MoneyValueText(
+                          hours: perfectDay.length / 5,
+                          hourlyValue: 100,
+                          uptime: getUptime(perfectDay)),
                     ],
                   ),
                 ],
@@ -94,13 +98,6 @@ class _MonthPageState extends State<MonthPage> {
                                 )
                               ],
                               fontWeight: FontWeight.bold)),
-                      UnifiedMonthView(
-                        year: 2024,
-                        month: 2,
-                        dayValues: dayValues,
-                        size: 300,
-                        viewMode: MonthViewMode.bar,
-                      )
                     ],
                   ),
                 ],

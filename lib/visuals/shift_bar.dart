@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/utils.dart';
+import 'package:visuals/theme.dart';
 
 class ProductivityBarChart extends StatefulWidget {
   final List<double> machineStates;
@@ -28,8 +29,8 @@ class _ProductivityBarChartState extends State<ProductivityBarChart>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration:
-          const Duration(milliseconds: 1000), // Total duration of the animation
+      duration: const Duration(
+          milliseconds: animationTime), // Total duration of the animation
       vsync: this,
     );
 
@@ -40,7 +41,7 @@ class _ProductivityBarChartState extends State<ProductivityBarChart>
       CurvedAnimation(
         parent: _controller,
         curve: Curves
-            .easeInOut, // This applies the ease-in-out effect to the animation
+            .easeOut, // This applies the ease-in-out effect to the animation
       ),
     )..addListener(() {
             setState(() {});
@@ -70,7 +71,7 @@ class _ProductivityBarChartState extends State<ProductivityBarChart>
           duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOut,
           width: isExpanded ? widget.size * 2 : widget.size,
-          height: isExpanded ? widget.size / 4 * 2 : widget.size / 4,
+          height: isExpanded ? widget.size / 6 * 2 : widget.size / 6,
           child: CustomPaint(
             painter: ProductivityBarChartPainter(
               widget.machineStates,
@@ -127,8 +128,9 @@ class ProductivityBarChartPainter extends CustomPainter {
       double xPosition = (size.width / 12) * i;
       // Draw hour labels
       final String label = "${(startingHour + i) % 12}";
-      textPainter.text =
-          TextSpan(text: label == "0" ? "12" : label, style: textStyle);
+      textPainter.text = TextSpan(
+          text: label == "0" ? "12" : label,
+          style: textStyle.copyWith(fontSize: size.width / 20));
       textPainter.layout();
       textPainter.paint(
           canvas, Offset(xPosition - textPainter.width / 2, size.height));

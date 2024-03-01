@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/utils.dart';
+import 'package:visuals/theme.dart';
 
 class Clock extends StatefulWidget {
   final List<double> machineStates;
@@ -28,8 +29,8 @@ class _ClockState extends State<Clock> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration:
-          const Duration(milliseconds: 1000), // Total duration of the animation
+      duration: const Duration(
+          milliseconds: animationTime), // Total duration of the animation
       vsync: this,
     );
 
@@ -38,7 +39,7 @@ class _ClockState extends State<Clock> with SingleTickerProviderStateMixin {
       CurvedAnimation(
         parent: _controller,
         curve: Curves
-            .easeInOutCubic, // This applies the ease-in-out effect to the animation
+            .easeInOut, // This applies the ease-in-out effect to the animation
       ),
     )..addListener(() {
         setState(() {});

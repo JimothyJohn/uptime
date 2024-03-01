@@ -31,8 +31,8 @@ class _MonthViewState extends State<MonthView>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      duration:
-          const Duration(milliseconds: 1000), // Total duration of the animation
+      duration: const Duration(
+          milliseconds: animationTime), // Total duration of the animation
       vsync: this,
     );
 
@@ -43,7 +43,7 @@ class _MonthViewState extends State<MonthView>
       CurvedAnimation(
         parent: _controller,
         curve: Curves
-            .easeInOut, // This applies the ease-in-out effect to the animation
+            .easeOut, // This applies the ease-in-out effect to the animation
       ),
     )..addListener(() {
             setState(() {});

@@ -73,3 +73,5 @@ final ThemeData uptimeTheme = ThemeData(
 
 const Color uptimeGreen = Color.fromRGBO(0, 220, 100, 1.0);
 const Color uptimeRed = Color.fromRGBO(220, 0, 100, 1.0);
+
+const int animationTime = 1500;

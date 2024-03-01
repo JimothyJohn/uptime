@@ -84,7 +84,8 @@ class _SpeedometerState extends State<Speedometer>
   void initState() {
     super.initState();
     _animationController = AnimationController(
-      duration: const Duration(milliseconds: 1000), // Total animation time
+      duration:
+          const Duration(milliseconds: animationTime), // Total animation time
       vsync: this,
     );
 
@@ -93,29 +94,36 @@ class _SpeedometerState extends State<Speedometer>
       TweenSequenceItem(
         tween: Tween<double>(
                 begin: 0.0, end: widget.value * 1.1) // Overshoots to 110%
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 30.0, // 50% of the animation duration for overshooting
+            .chain(CurveTween(curve: Curves.easeOutSine)),
+        weight: 20.0, // 50% of the animation duration for overshooting
       ),
       TweenSequenceItem(
         tween: Tween<double>(
-                begin: widget.value * 1.1,
+                begin: widget.value * 1.08,
                 end: widget.value * .95) // Settle back to 100%
-            .chain(CurveTween(curve: Curves.easeOut)),
+            .chain(CurveTween(curve: Curves.easeInOutSine)),
         weight: 20.0, // 30% of the animation duration for settling back
       ),
       TweenSequenceItem(
         tween: Tween<double>(
                 begin: widget.value * .95,
                 end: widget.value * 1.02) // Settle back to 100%
-            .chain(CurveTween(curve: Curves.easeOut)),
+            .chain(CurveTween(curve: Curves.easeInOutSine)),
         weight: 20.0, // 10% of the animation duration for settling back
       ),
       TweenSequenceItem(
         tween: Tween<double>(
                 begin: widget.value * 1.02,
+                end: widget.value * 0.99) // Settle back to 100%
+            .chain(CurveTween(curve: Curves.easeInOutSine)),
+        weight: 20.0, // 10% of the animation duration for settling back
+      ),
+      TweenSequenceItem(
+        tween: Tween<double>(
+                begin: widget.value * 0.99,
                 end: widget.value) // Settle back to 100%
-            .chain(CurveTween(curve: Curves.easeOut)),
-        weight: 30.0, // 10% of the animation duration for settling back
+            .chain(CurveTween(curve: Curves.easeInOutSine)),
+        weight: 20.0, // 10% of the animation duration for settling back
       ),
     ]).animate(_animationController)
       ..addListener(() {
