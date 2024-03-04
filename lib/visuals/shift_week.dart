@@ -3,24 +3,22 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/utils.dart';
 import 'package:visuals/theme.dart';
 
-class ShiftBarChart extends StatefulWidget {
+class WeekBarChart extends StatefulWidget {
   final List<double> machineStates;
   final double size;
-  final double startingHour;
 
-  const ShiftBarChart({
+  const WeekBarChart({
     Key? key,
     required this.size,
     required this.machineStates,
-    required this.startingHour,
-  })  : assert(machineStates.length <= 60),
+  })  : assert(machineStates.length <= 56),
         super(key: key);
 
   @override
-  _ShiftBarChartState createState() => _ShiftBarChartState();
+  _WeekBarChartState createState() => _WeekBarChartState();
 }
 
-class _ShiftBarChartState extends State<ShiftBarChart>
+class _WeekBarChartState extends State<WeekBarChart>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
@@ -73,9 +71,8 @@ class _ShiftBarChartState extends State<ShiftBarChart>
           width: isExpanded ? widget.size * 2 : widget.size,
           height: isExpanded ? widget.size / 6 * 2 : widget.size / 6,
           child: CustomPaint(
-            painter: ShiftBarChartPainter(
+            painter: WeekBarChartPainter(
               widget.machineStates,
-              widget.startingHour,
               Theme.of(context),
               _animation.value, //
             ),
@@ -86,21 +83,19 @@ class _ShiftBarChartState extends State<ShiftBarChart>
   }
 }
 
-class ShiftBarChartPainter extends CustomPainter {
+class WeekBarChartPainter extends CustomPainter {
   final List<double> machineStates;
-  final double startingHour;
   final ThemeData theme;
   final double animationValue; // Current animation value
 
-  ShiftBarChartPainter(
-      this.machineStates, this.startingHour, this.theme, this.animationValue);
+  WeekBarChartPainter(this.machineStates, this.theme, this.animationValue);
 
   @override
   void paint(Canvas canvas, Size size) {
     final int sectionsToDraw = animationValue.floor(); // Convert to integer
     final Paint paint = Paint()..style = PaintingStyle.fill;
-    final double barWidth =
-        size.width / 60; // There are 60 sections for a full circle.
+    final double barWidth = size.width /
+        56; // There are shift-hrs * 7-days = 56 sections for a full circle.
 
     // Loop through each machine state and draw a bar for it.
     for (int i = 0; i < sectionsToDraw; i++) {
@@ -124,13 +119,13 @@ class ShiftBarChartPainter extends CustomPainter {
     final textPainter = TextPainter(
         textAlign: TextAlign.center, textDirection: TextDirection.ltr);
 
-    for (int i = 0; i <= 12; i++) {
-      double xPosition = (size.width / 12) * i;
+    for (int i = 0; i < 7; i++) {
+      double xPosition = (size.width / 7) * i;
+      const dayLetters = ["S", "M", "T", "W", "T", "F", "S"];
       // Draw hour labels
-      final String label = "${(startingHour + i) % 12}";
+      final String label = "${dayLetters[i]}";
       textPainter.text = TextSpan(
-          text: label == "0" ? "12" : label,
-          style: textStyle.copyWith(fontSize: size.width / 20));
+          text: label, style: textStyle.copyWith(fontSize: size.width / 20));
       textPainter.layout();
       textPainter.paint(
           canvas, Offset(xPosition - textPainter.width / 2, size.height));

@@ -3,6 +3,7 @@ import 'package:visuals/theme.dart';
 import 'package:visuals/visuals/day.dart';
 import 'package:visuals/visuals/week.dart';
 import 'package:visuals/visuals/month.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
       darkTheme: darkTheme, // Defined in your theme.dart
       themeMode: _themeMode,
       home: MyHomePage(
-        title: 'Uptime',
+        title: 'UPTIME',
         toggleTheme: toggleTheme,
       ),
     );
@@ -72,6 +73,14 @@ class _MyHomePageState extends State<MyHomePage> {
         return const MonthPage(title: "Month");
       case 'Money':
         return Money();
+      case 'Haas':
+        return Money();
+      case 'Okuma':
+        return Money();
+      case 'Mazak':
+        return Money();
+      case 'UR':
+        return Money();
       default:
         return const DayPage(); // Default view
     }
@@ -84,15 +93,70 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title,
             style: textStyle.copyWith(fontWeight: FontWeight.bold)),
         actions: <Widget>[
+          Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 9.0),
+                child: Text("PAST",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.orbitron(
+                        color: Theme.of(context).colorScheme.onSurface,
+                        shadows: [
+                          const Shadow(
+                            offset:
+                                Offset(0, 0), // Horizontal and vertical offset
+                            blurRadius: 10, // How much the shadow is blurred
+                            color: Color.fromRGBO(130, 200, 130,
+                                0.1), // Shadow color with opacity
+                          )
+                        ],
+                        fontWeight: FontWeight.bold)),
+              ),
+              DropdownButton<String>(
+                value: _selectedView,
+                icon: const Icon(Icons.arrow_downward),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedView = newValue!;
+                  });
+                },
+                items: <String>['Day', 'Week', 'Month', 'Money']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface)),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 9.0),
+            child: Text("MFG",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.orbitron(
+                    color: Theme.of(context).colorScheme.onSurface,
+                    shadows: [
+                      const Shadow(
+                        offset: Offset(0, 0), // Horizontal and vertical offset
+                        blurRadius: 10, // How much the shadow is blurred
+                        color: Color.fromRGBO(
+                            130, 200, 130, 0.1), // Shadow color with opacity
+                      )
+                    ],
+                    fontWeight: FontWeight.bold)),
+          ),
           DropdownButton<String>(
-            value: _selectedView,
+            value: 'Haas',
             icon: const Icon(Icons.arrow_downward),
             onChanged: (String? newValue) {
               setState(() {
                 _selectedView = newValue!;
               });
             },
-            items: <String>['Day', 'Week', 'Month', 'Money']
+            items: <String>['Haas', 'Okuma', 'Mazak', 'UR']
                 .map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,

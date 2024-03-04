@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:visuals/visuals/speedometer.dart';
 import 'package:visuals/visuals/month_chart.dart';
 import 'package:visuals/utils.dart';
+import 'package:visuals/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/visuals/dollars.dart';
 

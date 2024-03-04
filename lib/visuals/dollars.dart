@@ -33,6 +33,7 @@ class MoneyValueText extends StatelessWidget {
 
     return Text(
       formattedValue,
+      textAlign: TextAlign.center,
       style: TextStyle(
           shadows: shadows,
           fontWeight: FontWeight.bold,

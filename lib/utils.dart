@@ -1,199 +1,18 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:visuals/theme.dart';
-
-const List<double> normalDay = [
-  0.7,
-  0.8,
-  0.98,
-  0.99,
-  0.98,
-  0.97,
-  0.99,
-  0.9,
-  0.58,
-  0.77,
-  0.95,
-  0.95,
-  0.95,
-  0.9,
-  0.8,
-  0.8,
-  0.9,
-  0.7,
-  0.2,
-  0.1,
-  0.0,
-  0.0,
-  0.6,
-  0.9,
-  0.9,
-  0.95,
-  0.96,
-  0.96,
-  0.97,
-  0.9,
-  0.98,
-  0.7,
-  0.6,
-  0.64,
-  0.76,
-  0.98,
-  0.98,
-  0.98,
-  0.97,
-  0.9,
-  0.85,
-  0.5,
-  0.25,
-];
-
-const List<double> upDay = [
-  0.9,
-  0.8,
-  0.98,
-  0.99,
-  0.98,
-  0.97,
-  0.99,
-  0.9,
-  0.58,
-  0.77,
-  0.95,
-  0.95,
-  0.95,
-  0.9,
-  0.8,
-  0.8,
-  0.9,
-  0.7,
-  0.2,
-  0.1,
-  0.0,
-  0.0,
-  0.6,
-  0.9,
-  0.9,
-  0.95,
-  0.96,
-  0.96,
-  0.97,
-  0.9,
-  0.98,
-  0.9,
-  0.9,
-  0.94,
-  0.96,
-  0.98,
-  0.98,
-  0.98,
-  0.97,
-  0.9,
-  0.85,
-  0.9,
-  0.95,
-];
-
-const List<double> downDay = [
-  0.1,
-  0.1,
-  0.1,
-  0.15,
-  0.18,
-  0.17,
-  0.19,
-  0.1,
-  0.18,
-  0.17,
-  0.15,
-  0.15,
-  0.15,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.1,
-  0.15,
-  0.16,
-  0.16,
-  0.17,
-  0.1,
-  0.18,
-  0.1,
-  0.1,
-  0.14,
-  0.16,
-  0.18,
-  0.18,
-  0.18,
-  0.17,
-  0.1,
-  0.15,
-  0.1,
-  0.15,
-];
-
-const List<double> perfectDay = [
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.98,
-  0.97,
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.95,
-  0.95,
-  0.95,
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.99,
-  0.90,
-  0.90,
-  0.96,
-  0.99,
-  0.99,
-  0.995,
-  0.996,
-  0.996,
-  0.997,
-  0.99,
-  0.998,
-  0.99,
-  0.99,
-  0.994,
-  0.996,
-  0.998,
-  0.998,
-  0.998,
-  0.997,
-  0.99,
-  0.985,
-  0.99,
-  0.995,
-];
 
 double getUptime(List<double> states) {
   final double sum = states.reduce((a, b) => a + b);
   return sum / states.length;
 }
 
-const List<double> sampleDay = downDay;
-
-final List<double> dayValues = List.generate(31, (_) => Random().nextDouble());
+double getUptimeMeasurements(List<Measurement> measurements) {
+  if (measurements.isEmpty) {
+    return 0.0; // Return 0 if the list is empty to avoid division by zero
+  }
+  final double sum = measurements.map((m) => m.value).reduce((a, b) => a + b);
+  return sum / measurements.length;
+}
 
 Color uptimeColor(double fillExtent, Color color) {
   final List<double> rgbLevels = [
@@ -209,4 +28,39 @@ Color uptimeColor(double fillExtent, Color color) {
           rgbLevels[2].toInt(),
           rgbLevels[3])
       : color; // As
+}
+
+class Measurement {
+  final DateTime time;
+  final double value;
+
+  const Measurement({required this.time, required this.value});
+}
+
+class Machine {
+  final String name;
+  final double runCurrent;
+  final double idleCurrent;
+  final double targetUptime;
+
+  const Machine(
+      {required this.name,
+      required this.runCurrent,
+      required this.idleCurrent,
+      required this.targetUptime});
+}
+
+List<Measurement> normalizeMeasurements(
+  Machine machine,
+  List<Measurement> measurements,
+) {
+  // Normalize each measurement value in the list
+  return measurements.map((measurement) {
+    // Clamp the result to ensure it falls within the 0-1 range, in case of outliers
+    final double normalizedValue = ((measurement.value - machine.idleCurrent) /
+            (machine.runCurrent - machine.idleCurrent))
+        .clamp(0.0, 1.0);
+
+    return Measurement(time: measurement.time, value: normalizedValue);
+  }).toList();
 }

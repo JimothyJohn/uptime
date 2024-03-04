@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "../../Flutter/uptimedev/amplify/backend/api/uptime"
 		}
 	],
 	"settings": {}

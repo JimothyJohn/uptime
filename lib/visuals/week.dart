@@ -1,92 +1,247 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:visuals/visuals/speedometer.dart';
-import 'package:visuals/visuals/week_chart.dart';
+import 'package:visuals/visuals/dollars.dart';
 import 'package:visuals/utils.dart';
+import 'package:visuals/constants.dart';
+import 'package:visuals/visuals/led.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:visuals/visuals/shift_week.dart';
+import 'package:visuals/visuals/speedometer.dart';
 
 class WeekPage extends StatefulWidget {
-  const WeekPage({Key? key}) : super(key: key);
-
+  const WeekPage({
+    Key? key,
+  }) : super(key: key);
   @override
-  State<WeekPage> createState() => _WeekPageState();
+  _WeekPageState createState() => _WeekPageState();
 }
 
 class _WeekPageState extends State<WeekPage> {
-  bool isDarkModeEnabled = false;
+  // This flag indicates whether the fade effect should be visible
+  bool _showFadeEffect = true;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    final TextStyle rowTextStyle = GoogleFonts.orbitron(
+        color: Theme.of(context).colorScheme.onSurface,
+        shadows: [
+          const Shadow(
+            offset: Offset(0, 0), // Horizontal and vertical offset
+            blurRadius: 10, // How much the shadow is blurred
+            color:
+                Color.fromRGBO(130, 200, 130, 0.1), // Shadow color with opacity
+          )
+        ],
+        fontWeight: FontWeight.bold);
+    return Align(
+      alignment: Alignment.centerRight,
       child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Column(
-                    children: [
-                      Speedometer(value: getUptime(dayValues), size: 250),
-                      Text("Efficiency",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  ),
+                  const Speedometer(value: 0.7, size: 150),
+                  Text("UPTIME",
+                      textAlign: TextAlign.center, style: rowTextStyle),
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      Text("Weekly Productivity",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                      WeekView(
-                          weekValues: const [0, 0.95, 0.7, 0.3, 0.6, 0.4, 0],
-                          width: 300),
-                    ],
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                      width: 100,
+                      child: Text("NAME",
+                          textAlign: TextAlign.center, style: rowTextStyle)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    width: 200,
+                    child: Text("PRODUCTION",
+                        textAlign: TextAlign.center, style: rowTextStyle),
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    width: 150,
+                    child: Text("VALUE",
+                        textAlign: TextAlign.center, style: rowTextStyle),
+                  ),
+                ),
+              ],
             ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                  width: 530,
+                  child: Divider(
+                      indent: 20,
+                      endIndent: 20,
+                      color: Theme.of(context).colorScheme.onSurface)),
+            ),
+            Expanded(
+              child: NotificationListener(
+                onNotification: (ScrollNotification notification) {
+                  // Determine if the scroll position is at the bottom
+                  final bool atBottom = notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent;
+
+                  // Update the visibility of the fade effect based on the scroll position
+                  if (_showFadeEffect != !atBottom) {
+                    setState(() {
+                      _showFadeEffect = !atBottom;
+                    });
+                  }
+
+                  // Returning null (or false) to indicate the notification is not handled further
+                  return false;
+                },
+                child: Stack(
+                  children: [
+                    const SingleChildScrollView(
+                      child: Column(children: [
+                        MachineRow(production: perfectDay),
+                        MachineRow(production: downDay),
+                        MachineRow(production: upDay),
+                        MachineRow(production: perfectDay),
+                        MachineRow(production: downDay),
+                        MachineRow(production: upDay),
+                        MachineRow(production: perfectDay),
+                        MachineRow(production: downDay),
+                        MachineRow(production: upDay),
+                      ]),
+                    ),
+                    if (_showFadeEffect)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 100, // Height of the fade effect area
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context)
+                                    .colorScheme
+                                    .background, // Starting color
+                                Theme.of(context)
+                                    .colorScheme
+                                    .background
+                                    .withOpacity(0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
-    )
-        /*
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      */
-        ;
+    );
+  }
+}
+
+class MachineRow extends StatelessWidget {
+  final List<double> production;
+  final bool? status;
+  const MachineRow({Key? key, required this.production, this.status})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              if (status != null)
+                SizedBox(
+                  width: 20,
+                  child: IndicatorLed(
+                      status: getUptime(production) > .6, size: 20),
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 100,
+                  child: Text(
+                      [
+                        "Universal Robot",
+                        "Handmill",
+                        "Inspection camera",
+                        "Doosan Puma",
+                        "Okuma LB-EX",
+                        "Trumpf TruLaser",
+                        "Haas VF-3",
+                        "Haas VF-2",
+                        "Mazak VCN",
+                        "Mazak VTC",
+                      ][Random.secure().nextInt(10)],
+                      textAlign: TextAlign.center,
+                      style: GoogleFonts.orbitron(
+                          color: Theme.of(context).colorScheme.onSurface,
+                          shadows: [
+                            const Shadow(
+                              offset: Offset(
+                                  0, 0), // Horizontal and vertical offset
+                              blurRadius: 10, // How much the shadow is blurred
+                              color: Color.fromRGBO(130, 200, 130,
+                                  0.1), // Shadow color with opacity
+                            )
+                          ],
+                          fontWeight: FontWeight.bold)),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 200,
+                  child: WeekBarChart(
+                    size: 200,
+                    machineStates: production,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: SizedBox(
+                  width: 150,
+                  child: MoneyValueText(
+                      hours: perfectDay.length / 5,
+                      hourlyValue: 150,
+                      uptime: getUptime(production)),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: SizedBox(
+              width: 530,
+              child: Divider(
+                  indent: 20,
+                  endIndent: 20,
+                  color: Theme.of(context).colorScheme.onSurface)),
+        ),
+      ],
+    );
   }
 }
