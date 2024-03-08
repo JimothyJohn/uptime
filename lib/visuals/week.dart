@@ -1,11 +1,7 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:visuals/visuals/dollars.dart';
-import 'package:visuals/utils.dart';
 import 'package:visuals/constants.dart';
-import 'package:visuals/visuals/led.dart';
+import 'package:visuals/common/ui.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/visuals/shift_week.dart';
 import 'package:visuals/visuals/speedometer.dart';
 
 class WeekPage extends StatefulWidget {
@@ -106,17 +102,38 @@ class _WeekPageState extends State<WeekPage> {
                 },
                 child: Stack(
                   children: [
-                    const SingleChildScrollView(
+                    SingleChildScrollView(
                       child: Column(children: [
-                        MachineRow(production: perfectDay),
-                        MachineRow(production: downDay),
-                        MachineRow(production: upDay),
-                        MachineRow(production: perfectDay),
-                        MachineRow(production: downDay),
-                        MachineRow(production: upDay),
-                        MachineRow(production: perfectDay),
-                        MachineRow(production: downDay),
-                        MachineRow(production: upDay),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: perfecto,
+                          timeUnit: "week",
+                        ),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: downBoy,
+                          timeUnit: "week",
+                        ),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: upMan,
+                          timeUnit: "week",
+                        ),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: perfecto,
+                          timeUnit: "week",
+                        ),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: downBoy,
+                          timeUnit: "week",
+                        ),
+                        MachineRow(
+                          production: generateWeekMeasurements(),
+                          machine: upMan,
+                          timeUnit: "week",
+                        ),
                       ]),
                     ),
                     if (_showFadeEffect)
@@ -150,98 +167,6 @@ class _WeekPageState extends State<WeekPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class MachineRow extends StatelessWidget {
-  final List<double> production;
-  final bool? status;
-  const MachineRow({Key? key, required this.production, this.status})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              if (status != null)
-                SizedBox(
-                  width: 20,
-                  child: IndicatorLed(
-                      status: getUptime(production) > .6, size: 20),
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: 100,
-                  child: Text(
-                      [
-                        "Universal Robot",
-                        "Handmill",
-                        "Inspection camera",
-                        "Doosan Puma",
-                        "Okuma LB-EX",
-                        "Trumpf TruLaser",
-                        "Haas VF-3",
-                        "Haas VF-2",
-                        "Mazak VCN",
-                        "Mazak VTC",
-                      ][Random.secure().nextInt(10)],
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.orbitron(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          shadows: [
-                            const Shadow(
-                              offset: Offset(
-                                  0, 0), // Horizontal and vertical offset
-                              blurRadius: 10, // How much the shadow is blurred
-                              color: Color.fromRGBO(130, 200, 130,
-                                  0.1), // Shadow color with opacity
-                            )
-                          ],
-                          fontWeight: FontWeight.bold)),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: 200,
-                  child: WeekBarChart(
-                    size: 200,
-                    machineStates: production,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: SizedBox(
-                  width: 150,
-                  child: MoneyValueText(
-                      hours: perfectDay.length / 5,
-                      hourlyValue: 150,
-                      uptime: getUptime(production)),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Align(
-          alignment: Alignment.centerRight,
-          child: SizedBox(
-              width: 530,
-              child: Divider(
-                  indent: 20,
-                  endIndent: 20,
-                  color: Theme.of(context).colorScheme.onSurface)),
-        ),
-      ],
     );
   }
 }

@@ -3,39 +3,31 @@ import 'package:visuals/theme.dart';
 import 'package:visuals/visuals/day.dart';
 import 'package:visuals/visuals/week.dart';
 import 'package:visuals/visuals/month.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:visuals/visuals/theme_notifier.dart';
+import 'package:visuals/visuals/view_notifier.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends StatefulWidget {
-  @override
-  _MyAppState createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends ConsumerWidget {
   // Default to light theme
   ThemeMode _themeMode = ThemeMode.dark;
 
-  void toggleTheme(bool isDark) {
-    setState(() {
-      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
-    });
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Listen to the theme mode state
+    final themeMode = ref.watch(themeNotifierProvider);
+
     return MaterialApp(
-      title: 'Visualization Sandbox',
-      theme: lightTheme, // Defined in your theme.dart
-      darkTheme: darkTheme, // Defined in your theme.dart
-      themeMode: _themeMode,
-      home: MyHomePage(
-        title: 'UPTIME',
-        toggleTheme: toggleTheme,
-      ),
-    );
+        title: 'Visualization Sandbox',
+        theme: lightTheme, // Defined in your theme.dart
+        darkTheme: darkTheme, // Defined in your theme.dart
+        themeMode: themeMode, // Use the theme mode from the state notifier
+        home: MyHomePage(
+          title: 'UPTIME',
+        ));
   }
 }
 
@@ -48,131 +40,61 @@ class Money extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+// Inside my_home_page.dart
+class MyHomePage extends ConsumerWidget {
   final String title;
-  final Function(bool) toggleTheme;
 
-  const MyHomePage({Key? key, required this.title, required this.toggleTheme})
-      : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _selectedView = ref.watch(viewNotifierProvider);
+    final themeMode =
+        ref.watch(themeNotifierProvider); // Add this to watch the theme mode
 
-class _MyHomePageState extends State<MyHomePage> {
-  bool isDarkModeEnabled = false;
-  String _selectedView = 'Day';
-
-  Widget _getCurrentView() {
-    switch (_selectedView) {
-      case 'Day':
-        return const DayPage();
-      case 'Week':
-        return const WeekPage();
-      case 'Month':
-        return const MonthPage(title: "Month");
-      case 'Money':
-        return Money();
-      case 'Haas':
-        return Money();
-      case 'Okuma':
-        return Money();
-      case 'Mazak':
-        return Money();
-      case 'UR':
-        return Money();
-      default:
-        return const DayPage(); // Default view
+    Widget _getCurrentView() {
+      switch (_selectedView) {
+        case 'Day':
+          return const DayPage();
+        case 'Week':
+          return const WeekPage();
+        case 'Month':
+          return const MonthPage();
+        // Add cases for 'Money', 'Haas', 'Okuma', 'Mazak', 'UR'
+        default:
+          return const DayPage(); // Default view
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title,
-            style: textStyle.copyWith(fontWeight: FontWeight.bold)),
+        title: Text(title),
         actions: <Widget>[
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 9.0),
-                child: Text("PAST",
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.orbitron(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        shadows: [
-                          const Shadow(
-                            offset:
-                                Offset(0, 0), // Horizontal and vertical offset
-                            blurRadius: 10, // How much the shadow is blurred
-                            color: Color.fromRGBO(130, 200, 130,
-                                0.1), // Shadow color with opacity
-                          )
-                        ],
-                        fontWeight: FontWeight.bold)),
-              ),
-              DropdownButton<String>(
-                value: _selectedView,
-                icon: const Icon(Icons.arrow_downward),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedView = newValue!;
-                  });
-                },
-                items: <String>['Day', 'Week', 'Month', 'Money']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value,
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface)),
-                  );
-                }).toList(),
-              ),
-            ],
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 9.0),
-            child: Text("MFG",
-                textAlign: TextAlign.center,
-                style: GoogleFonts.orbitron(
-                    color: Theme.of(context).colorScheme.onSurface,
-                    shadows: [
-                      const Shadow(
-                        offset: Offset(0, 0), // Horizontal and vertical offset
-                        blurRadius: 10, // How much the shadow is blurred
-                        color: Color.fromRGBO(
-                            130, 200, 130, 0.1), // Shadow color with opacity
-                      )
-                    ],
-                    fontWeight: FontWeight.bold)),
-          ),
+          // Your existing widgets and actions...
           DropdownButton<String>(
-            value: 'Haas',
+            value: _selectedView,
             icon: const Icon(Icons.arrow_downward),
             onChanged: (String? newValue) {
-              setState(() {
-                _selectedView = newValue!;
-              });
+              ref.read(viewNotifierProvider.notifier).changeView(newValue!);
             },
-            items: <String>['Haas', 'Okuma', 'Mazak', 'UR']
-                .map<DropdownMenuItem<String>>((String value) {
+            items: <String>[
+              'Day',
+              'Week',
+              'Month',
+            ].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
-                child: Text(value,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface)),
+                child: Text(value),
               );
             }).toList(),
           ),
           IconButton(
-            icon: Icon(isDarkModeEnabled ? Icons.light_mode : Icons.dark_mode),
+            icon: Icon(themeMode == ThemeMode.dark
+                ? Icons.light_mode
+                : Icons.dark_mode),
             onPressed: () {
-              setState(() {
-                isDarkModeEnabled = !isDarkModeEnabled;
-                widget.toggleTheme(isDarkModeEnabled);
-              });
+              // Directly call toggleTheme on your ThemeNotifier without using setState
+              ref.read(themeNotifierProvider.notifier).toggleTheme();
             },
           ),
         ],

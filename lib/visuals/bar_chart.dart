@@ -128,18 +128,22 @@ class ProductivityBarChartPainter extends CustomPainter {
       switch (timeUnit) {
         case "day":
           textPainter.text = TextSpan(
-              text: measurements[i].time.hour.toString(),
+              text: measurements[i].time.hour < 13
+                  ? "${measurements[i].time.hour}"
+                  : "${measurements[i].time.hour - 12}",
               style: textStyle.copyWith(fontSize: size.width / 20));
           break;
         case "week":
-          freq = 10;
+          freq = 12;
+          List<String> weekdays = ["S", "M", "T", "W", "T", "F", "S"];
           textPainter.text = TextSpan(
-              text: measurements[i].time.weekday.toString(),
+              text: weekdays[measurements[i].time.weekday - 1],
               style: textStyle.copyWith(fontSize: size.width / 20));
           break;
         case "month":
           textPainter.text = TextSpan(
-              text: measurements[i].time.day.toString(),
+              text:
+                  "${measurements[i].time.month.toString()}/${measurements[i].time.day.toString()}",
               style: textStyle.copyWith(fontSize: size.width / 20));
       }
 

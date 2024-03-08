@@ -1,142 +1,172 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/visuals/speedometer.dart';
-import 'package:visuals/visuals/month_chart.dart';
-import 'package:visuals/utils.dart';
 import 'package:visuals/constants.dart';
+import 'package:visuals/common/ui.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/visuals/dollars.dart';
+import 'package:visuals/visuals/speedometer.dart';
 
 class MonthPage extends StatefulWidget {
-  final String title;
-
-  const MonthPage({Key? key, required this.title}) : super(key: key);
-
+  const MonthPage({
+    Key? key,
+  }) : super(key: key);
   @override
-  State<MonthPage> createState() => _MonthPageState();
+  _MonthPageState createState() => _MonthPageState();
 }
 
 class _MonthPageState extends State<MonthPage> {
-  bool isDarkModeEnabled = false;
+  // This flag indicates whether the fade effect should be visible
+  bool _showFadeEffect = true;
+
   @override
   Widget build(BuildContext context) {
-    return Center(
+    final TextStyle rowTextStyle = GoogleFonts.orbitron(
+        color: Theme.of(context).colorScheme.onSurface,
+        shadows: [
+          const Shadow(
+            offset: Offset(0, 0), // Horizontal and vertical offset
+            blurRadius: 10, // How much the shadow is blurred
+            color:
+                Color.fromRGBO(130, 200, 130, 0.1), // Shadow color with opacity
+          )
+        ],
+        fontWeight: FontWeight.bold);
+    return Align(
+      alignment: Alignment.centerRight,
       child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Padding(
               padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Column(
-                    children: [
-                      Speedometer(value: getUptime(dayValues), size: 250),
-                      Text("Efficiency",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                      MoneyValueText(
-                          hours: perfectDay.length / 5,
-                          hourlyValue: 100,
-                          uptime: getUptime(perfectDay)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  /*
-                  Column(
-                    children: [
-                      Text("Weekly Productivity",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                      WeekView(
-                          weekValues: const [0, 0.95, 0.7, 0.3, 0.6, 0.4, 0],
-                          width: 300),
-                    ],
-                  ),
-                  */
-                  Column(
-                    children: [
-                      Text("Daily Trend",
-                          style: GoogleFonts.orbitron(
-                              color: Theme.of(context).colorScheme.onSurface,
-                              shadows: [
-                                const Shadow(
-                                  offset: Offset(
-                                      0, 0), // Horizontal and vertical offset
-                                  blurRadius:
-                                      10, // How much the shadow is blurred
-                                  color: Color.fromRGBO(130, 200, 130,
-                                      0.1), // Shadow color with opacity
-                                )
-                              ],
-                              fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Monthly Productivity",
-                      style: GoogleFonts.orbitron(
-                          color: Theme.of(context).colorScheme.onSurface,
-                          shadows: [
-                            const Shadow(
-                              offset: Offset(
-                                  0, 0), // Horizontal and vertical offset
-                              blurRadius: 10, // How much the shadow is blurred
-                              color: Color.fromRGBO(130, 200, 130,
-                                  0.1), // Shadow color with opacity
-                            )
-                          ],
-                          fontWeight: FontWeight.bold)),
-                  MonthView(
-                      year: 2024, month: 3, dayValues: dayValues, size: 200)
+                  const Speedometer(value: 0.7, size: 150),
+                  Text("UPTIME",
+                      textAlign: TextAlign.center, style: rowTextStyle),
                 ],
               ),
             ),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                      width: 100,
+                      child: Text("NAME",
+                          textAlign: TextAlign.center, style: rowTextStyle)),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    width: 200,
+                    child: Text("PRODUCTION",
+                        textAlign: TextAlign.center, style: rowTextStyle),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    width: 150,
+                    child: Text("VALUE",
+                        textAlign: TextAlign.center, style: rowTextStyle),
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.centerRight,
+              child: SizedBox(
+                  width: 530,
+                  child: Divider(
+                      indent: 20,
+                      endIndent: 20,
+                      color: Theme.of(context).colorScheme.onSurface)),
+            ),
+            Expanded(
+              child: NotificationListener(
+                onNotification: (ScrollNotification notification) {
+                  // Determine if the scroll position is at the bottom
+                  final bool atBottom = notification.metrics.pixels >=
+                      notification.metrics.maxScrollExtent;
+
+                  // Update the visibility of the fade effect based on the scroll position
+                  if (_showFadeEffect != !atBottom) {
+                    setState(() {
+                      _showFadeEffect = !atBottom;
+                    });
+                  }
+
+                  // Returning null (or false) to indicate the notification is not handled further
+                  return false;
+                },
+                child: Stack(
+                  children: [
+                    SingleChildScrollView(
+                      child: Column(children: [
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: perfecto,
+                          timeUnit: "month",
+                        ),
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: downBoy,
+                          timeUnit: "month",
+                        ),
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: upMan,
+                          timeUnit: "month",
+                        ),
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: perfecto,
+                          timeUnit: "month",
+                        ),
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: downBoy,
+                          timeUnit: "month",
+                        ),
+                        MachineRow(
+                          production: generateMonthMeasurements(),
+                          machine: upMan,
+                          timeUnit: "month",
+                        ),
+                      ]),
+                    ),
+                    if (_showFadeEffect)
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          height: 100, // Height of the fade effect area
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                Theme.of(context)
+                                    .colorScheme
+                                    .background, // Starting color
+                                Theme.of(context)
+                                    .colorScheme
+                                    .background
+                                    .withOpacity(0)
+                              ],
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            )
           ],
         ),
       ),
-    )
-        /*
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-      */
-        ;
+    );
   }
 }
