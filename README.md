@@ -10,6 +10,8 @@ utils/Quickstart.sh
 
 ### Sample Query
 
+Get productivity for the past 12hrs.
+
 ```sql
 WITH averaged_samples AS (
   SELECT
