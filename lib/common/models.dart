@@ -86,4 +86,42 @@ class Machine {
         userId: json['userId'],
         organizationId: json['organizationId'],
       );
+
+  Machine copyWith({
+    String? id,
+    String? name,
+    double? hourlyValue,
+    String? manufacturer,
+    String? model,
+    String? process,
+    double? cycleTime,
+    bool? active,
+    double? runCurrent,
+    double? idleCurrent,
+    double? targetUptime,
+    String? division,
+    String? location,
+    String? subscriptionItem,
+    String? userId,
+    String? organizationId,
+  }) {
+    return Machine(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      hourlyValue: hourlyValue ?? this.hourlyValue,
+      manufacturer: manufacturer ?? this.manufacturer,
+      model: model ?? this.model,
+      process: process ?? this.process,
+      cycleTime: cycleTime ?? this.cycleTime,
+      active: active ?? this.active,
+      runCurrent: runCurrent ?? this.runCurrent,
+      idleCurrent: idleCurrent ?? this.idleCurrent,
+      targetUptime: targetUptime ?? this.targetUptime,
+      division: division ?? this.division,
+      location: location ?? this.location,
+      subscriptionItem: subscriptionItem ?? this.subscriptionItem,
+      userId: userId ?? this.userId,
+      organizationId: organizationId ?? this.organizationId,
+    );
+  }
 }

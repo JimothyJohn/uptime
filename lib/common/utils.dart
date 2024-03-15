@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:visuals/ui/theme.dart';
 import 'package:visuals/common/models.dart';
-import 'package:visuals/common/constants.dart';
 
 double getUptime(List<double> states) {
   final double sum = states.reduce((a, b) => a + b);
@@ -67,41 +67,65 @@ Map<Machine, List<Measurement>> createMachineMeasurementsMap(
   return machineMeasurementsMap;
 }
 
-Map<Machine, List<Measurement>> dayMeasurementMap =
-    createMachineMeasurementsMap(const [
-  perfecto,
-  downBoy,
-  upMan,
-  upMon,
-], [
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-]);
+List<Measurement> generateDayMeasurements(
+    DateTime startTime, int durationHours) {
+  final List<Measurement> measurements = [];
+  final Random random = Random();
 
-Map<Machine, List<Measurement>> weekMeasurementMap =
-    createMachineMeasurementsMap(const [
-  perfecto,
-  downBoy,
-  upMan,
-  upMon,
-], [
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-]);
+  DateTime currentTime = startTime;
+  for (int hour = 0; hour < durationHours; hour++) {
+    for (int minute = 0; minute < 60; minute += 12) {
+      // Generate a random value between 1 and 5
+      double value = random.nextDouble() * 4 +
+          1; // random.nextDouble() generates a value between 0.0 and 1.0
+      measurements.add(Measurement(time: currentTime, value: value));
 
-Map<Machine, List<Measurement>> monthMeasurementMap =
-    createMachineMeasurementsMap(const [
-  perfecto,
-  downBoy,
-  upMan,
-  upMon,
-], [
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-]);
+      // Increment currentTime by 12 minutes
+      currentTime = currentTime.add(const Duration(minutes: 12));
+    }
+  }
+
+  return measurements;
+}
+
+List<Measurement> generateWeekMeasurements() {
+  final List<Measurement> measurements = [];
+  final Random random = Random();
+
+  DateTime currentTime = DateTime.now().subtract(const Duration(days: 7));
+  for (int day = 0; day < 7; day++) {
+    for (int hour = 0; hour < 24; hour += 2) {
+      // Generate a random value between 1 and 5
+      double value = random.nextDouble() * 4 +
+          1; // random.nextDouble() generates a value between 0.0 and 1.0
+      measurements.add(Measurement(time: currentTime, value: value));
+
+      // Increment currentTime by 2 hours
+      currentTime = currentTime.add(const Duration(hours: 2));
+    }
+  }
+
+  return measurements;
+}
+
+List<Measurement> generateMonthMeasurements() {
+  final List<Measurement> measurements = [];
+  final Random random = Random();
+
+  DateTime firstOfMonth =
+      DateTime.now().copyWith(day: 0, hour: 0, minute: 0, second: 0);
+
+  for (int day = 0; day < DateTime.now().day; day++) {
+    for (int shift = 0; shift < 2; shift++) {
+      // Generate a random value between 1 and 5
+      double value = random.nextDouble() * 4 +
+          1; // random.nextDouble() generates a value between 0.0 and 1.0
+      measurements.add(Measurement(time: firstOfMonth, value: value));
+
+      // Increment currentTime by 2 hours
+      firstOfMonth = firstOfMonth.add(const Duration(hours: 12));
+    }
+  }
+
+  return measurements;
+}

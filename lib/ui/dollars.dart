@@ -17,8 +17,8 @@ class MoneyValueText extends StatelessWidget {
   Widget build(BuildContext context) {
     // Determine the color based on the value
     final value = (hours * hourlyValue * uptime).toInt();
-    final Color textColor = value >= 200 ? uptimeGreen : uptimeRed;
-    final List<Shadow> shadows = value >= 200
+    final Color textColor = value >= 500 ? uptimeGreen : uptimeRed;
+    final List<Shadow> shadows = value >= 500
         ? [
             const Shadow(
               offset: Offset(0, 0), // Horizontal and vertical offset
@@ -38,7 +38,7 @@ class MoneyValueText extends StatelessWidget {
           shadows: shadows,
           fontWeight: FontWeight.bold,
           color: textColor,
-          fontSize: 24),
+          fontSize: 18),
     );
   }
 
