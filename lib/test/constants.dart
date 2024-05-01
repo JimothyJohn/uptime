@@ -1,5 +1,4 @@
 import 'package:visuals/common/models.dart';
-import 'package:visuals/common/utils.dart';
 
 const Machine perfecto = Machine(
     id: "",
@@ -75,36 +74,3 @@ const List<Machine> allMachines = [
   upOne,
   beast,
 ];
-
-Map<Machine, List<Measurement>> dayMeasurementMap =
-    createMachineMeasurementsMap(allMachines, [
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-  generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8),
-]);
-
-Map<Machine, List<Measurement>> weekMeasurementMap =
-    createMachineMeasurementsMap(allMachines, [
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-  generateWeekMeasurements(),
-]);
-
-Map<Machine, List<Measurement>> monthMeasurementMap =
-    createMachineMeasurementsMap(allMachines, [
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-  generateMonthMeasurements(),
-]);

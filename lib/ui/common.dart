@@ -27,6 +27,7 @@ class MachineHeader extends StatelessWidget {
           )
         ],
         fontWeight: FontWeight.bold);
+    const double padding = 8;
     return Column(
       children: [
         Row(
@@ -38,14 +39,14 @@ class MachineHeader extends StatelessWidget {
                   color: Theme.of(context).colorScheme.onSurface),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: padding),
               child: SizedBox(
                   width: 100,
                   child: Text("Name",
                       textAlign: TextAlign.center, style: rowTextStyle)),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: padding),
               child: SizedBox(
                 width: 200,
                 child: Text("Production",
@@ -53,7 +54,7 @@ class MachineHeader extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: padding),
               child: SizedBox(
                 width: 100,
                 child: Text("Value",
@@ -107,6 +108,7 @@ class MachineRow extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // Status LED
                 SizedBox(
                   width: 20,
                   height: height,
@@ -117,6 +119,7 @@ class MachineRow extends StatelessWidget {
                               machine.runCurrent * .2,
                       size: 20),
                 ),
+                // Machine name
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: padding),
                   child: SizedBox(
@@ -139,6 +142,7 @@ class MachineRow extends StatelessWidget {
                             fontWeight: FontWeight.bold)),
                   ),
                 ),
+                // Productivity chart
                 Padding(
                   padding: const EdgeInsets.only(bottom: padding),
                   child: SizedBox(
@@ -151,6 +155,7 @@ class MachineRow extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Value text
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: padding),
                   child: SizedBox(

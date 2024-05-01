@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/common/utils.dart';
 import 'package:visuals/common/models.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 
 class ProductivityBarChart extends StatefulWidget {
   final List<Measurement> measurements;
@@ -96,10 +96,27 @@ class ProductivityBarChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final int sectionsToDraw = animationValue.floor(); // Convert to integer
     final Paint paint = Paint()..style = PaintingStyle.fill;
-    final double barWidth = size.width /
-        measurements.length; // There are 60 sections for a full circle.
+    late int barNumber;
+    switch (timeUnit.toLowerCase()[0]) {
+      case "s":
+        // There are 5 total 12 minute segments per hour
+        // There are a 12 hours in a shift max
+        // TODO should this be changed to 15 minutes?
+        barNumber = 5 * 12;
+        break;
+      case "w":
+        // To hit ~60 bars in a week we need ~8 bars per day
+        // This simplifies to 3 hours per bar
+        barNumber = 8 * 7;
+        break;
+      case "m":
+        // Month will be broken down into 2 shifts per day
+        barNumber = 2 * 31;
+        break;
+    }
+    final double barWidth =
+        size.width / barNumber; // There are 60 sections for a full circle.
 
     // Optionally draw ticks and labels
     final textStyle =
@@ -107,47 +124,59 @@ class ProductivityBarChartPainter extends CustomPainter {
     final textPainter = TextPainter(
         textAlign: TextAlign.center, textDirection: TextDirection.ltr);
 
+    // Default to day frequency
+    // Display every new hour (5 * 12 minute shift)
     double freq = 5;
+    const List<String> weekdays = ["S", "M", "T", "W", "T", "F", "S"];
 
     // Loop through each machine state and draw a bar for it.
-    for (int i = 0; i < sectionsToDraw; i++) {
-      final double fillExtent =
-          1 - measurements[i].value; // Value between 0 and 1
-      final double barHeight = size.height *
-          measurements[i]
-              .value; // Calculate bar height based on the machine state.
+    for (int i = 0; i < barNumber; i++) {
       final double xStart = i * barWidth;
-      final double yStart = size.height -
-          barHeight; // Start drawing from the bottom of the canvas.
+      if (i < measurements.length) {
+        final double fillExtent =
+            1 - measurements[i].value; // Value between 0 and 1
+        final double barHeight = size.height *
+            measurements[i]
+                .value; // Calculate bar height based on the machine state.
 
-      // Draw the bar
-      paint.color = uptimeColor(fillExtent, theme.colorScheme.surface);
+        final double yStart = size.height -
+            barHeight; // Start drawing from the bottom of the canvas.
 
-      canvas.drawRect(
-          Rect.fromLTWH(xStart, yStart, barWidth, barHeight), paint);
+        // Draw the bar
+        paint.color = uptimeColor(fillExtent, theme.colorScheme.surface);
 
+        canvas.drawRect(
+            Rect.fromLTWH(xStart, yStart, barWidth, barHeight), paint);
+      }
+
+      late int displayedTime;
       switch (timeUnit.toLowerCase()[0]) {
-        case "d":
+        case "s":
+          // Count up hours from start time
+          displayedTime = (measurements[0].time.hour + (i / freq)).toInt();
           textPainter.text = TextSpan(
-              text: measurements[i].time.hour < 13
-                  ? "${measurements[i].time.hour}"
-                  : "${measurements[i].time.hour - 12}",
+              text: displayedTime < 13
+                  ? "$displayedTime"
+                  : "${displayedTime - 12}",
               style: textStyle.copyWith(fontSize: size.width / 20));
           break;
         case "w":
           freq = 12;
-          List<String> weekdays = ["S", "M", "T", "W", "T", "F", "S"];
           textPainter.text = TextSpan(
-              text: weekdays[measurements[i].time.weekday - 1],
+              text: weekdays[
+                  // Count up days from start of the period, 12 samples per day
+                  (measurements[0].time.weekday + (i / freq) - 1).toInt()],
               style: textStyle.copyWith(fontSize: size.width / 20));
           break;
         case "m":
+          // Print every 5 days accounting for 2 shifts per day
+          freq = 2 * 5;
+          // Count up days from start of the period, 2 shifts per day
+          displayedTime = (measurements[0].time.day + (i / 2)).toInt();
           textPainter.text = TextSpan(
-              text:
-                  "${measurements[i].time.month.toString()}/${measurements[i].time.day.toString()}",
+              text: "$displayedTime",
               style: textStyle.copyWith(fontSize: size.width / 20));
       }
-
       if (i % freq == 0) {
         // Draw hour labels
         textPainter.layout();

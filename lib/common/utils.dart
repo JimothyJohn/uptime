@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
-import 'package:visuals/ui/theme.dart';
+
+import 'package:visuals/common/theme.dart';
 import 'package:visuals/common/models.dart';
 
 double getUptime(List<double> states) {
@@ -47,85 +47,67 @@ List<Measurement> normalizeMeasurements(
   }).toList();
 }
 
-Map<Machine, List<Measurement>> createMachineMeasurementsMap(
-    List<Machine> machines, List<List<Measurement>> measurementsList) {
-  // Initialize an empty map to store the association between Machine and List<Measurement>
-  Map<Machine, List<Measurement>> machineMeasurementsMap = {};
+List<List<Measurement>> groupMeasurements(
+    List<Measurement> measurements, String period) {
+  Map<dynamic, List<Measurement>> grouped = {};
 
-  // Iterate through the list of machines
-  for (int i = 0; i < machines.length; i++) {
-    // Use the current index to associate the machine with the corresponding List<Measurement>
-    // Check if the measurementsList has an entry at the current index to avoid out of range errors
-    if (i < measurementsList.length) {
-      machineMeasurementsMap[machines[i]] = measurementsList[i];
-    } else {
-      // If there's no corresponding List<Measurement>, associate with an empty list
-      machineMeasurementsMap[machines[i]] = [];
+  for (Measurement measurement in measurements) {
+    dynamic key;
+    switch (period) {
+      case 'd': // Group by Day
+        key = DateTime(measurement.time.year, measurement.time.month,
+            measurement.time.day);
+        break;
+      case 'w': // Group by Week
+        // Using the week number might be complex due to varying standards. Here, we simplify by considering the week start date.
+        final firstDayOfWeek = measurement.time
+            .subtract(Duration(days: measurement.time.weekday - 1));
+        key = DateTime(
+            firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day);
+        break;
+      case 'm': // Group by Month
+        key = DateTime(measurement.time.year, measurement.time.month);
+        break;
+      default:
+        throw ArgumentError(
+            'Period must be "d" (day), "w" (week), or "m" (month).');
     }
+
+    if (!grouped.containsKey(key)) {
+      grouped[key] = [];
+    }
+    grouped[key]!.add(measurement);
   }
 
-  return machineMeasurementsMap;
+  return grouped.values.toList();
 }
 
-List<Measurement> generateDayMeasurements(
-    DateTime startTime, int durationHours) {
-  final List<Measurement> measurements = [];
-  final Random random = Random();
+List<Measurement> averageMeasurements(
+    List<List<Measurement>> measurementLists) {
+  final int numberOfLists = measurementLists.length;
+  final int lengthOfEachList = measurementLists[0].length;
 
-  DateTime currentTime = startTime;
-  for (int hour = 0; hour < durationHours; hour++) {
-    for (int minute = 0; minute < 60; minute += 12) {
-      // Generate a random value between 1 and 5
-      double value = random.nextDouble() * 4 +
-          1; // random.nextDouble() generates a value between 0.0 and 1.0
-      measurements.add(Measurement(time: currentTime, value: value));
+  // Initialize a list to store the averaged Measurements
+  List<Measurement> averagedMeasurements = [];
 
-      // Increment currentTime by 12 minutes
-      currentTime = currentTime.add(const Duration(minutes: 12));
+  // Iterate over each index of the inner lists
+  for (int i = 0; i < lengthOfEachList; i++) {
+    // Sum up the values at this index across all lists
+    double sum = 0.0;
+    for (List<Measurement> list in measurementLists) {
+      sum += list[i].value;
     }
+    // Calculate the average
+    final double averageValue = sum / numberOfLists;
+
+    // Assume all measurements for the same index across lists share the same DateTime
+    // This might not be the case in your actual application, and you might need a different approach if so
+    final DateTime sharedTime = measurementLists[0][i].time;
+
+    // Create a new Measurement with the averaged value
+    averagedMeasurements
+        .add(Measurement(time: sharedTime, value: averageValue));
   }
 
-  return measurements;
-}
-
-List<Measurement> generateWeekMeasurements() {
-  final List<Measurement> measurements = [];
-  final Random random = Random();
-
-  DateTime currentTime = DateTime.now().subtract(const Duration(days: 7));
-  for (int day = 0; day < 7; day++) {
-    for (int hour = 0; hour < 24; hour += 2) {
-      // Generate a random value between 1 and 5
-      double value = random.nextDouble() * 4 +
-          1; // random.nextDouble() generates a value between 0.0 and 1.0
-      measurements.add(Measurement(time: currentTime, value: value));
-
-      // Increment currentTime by 2 hours
-      currentTime = currentTime.add(const Duration(hours: 2));
-    }
-  }
-
-  return measurements;
-}
-
-List<Measurement> generateMonthMeasurements() {
-  final List<Measurement> measurements = [];
-  final Random random = Random();
-
-  DateTime firstOfMonth =
-      DateTime.now().copyWith(day: 0, hour: 0, minute: 0, second: 0);
-
-  for (int day = 0; day < DateTime.now().day; day++) {
-    for (int shift = 0; shift < 2; shift++) {
-      // Generate a random value between 1 and 5
-      double value = random.nextDouble() * 4 +
-          1; // random.nextDouble() generates a value between 0.0 and 1.0
-      measurements.add(Measurement(time: firstOfMonth, value: value));
-
-      // Increment currentTime by 2 hours
-      firstOfMonth = firstOfMonth.add(const Duration(hours: 12));
-    }
-  }
-
-  return measurements;
+  return averagedMeasurements;
 }

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 
 /*
 I want a page with a navigation bar at the top that when clicked opens a navigation menu with the options Home, Nav, and About. The website should show a full image as the background of the website and have neutral dark theme with a modern font. The center of the background of the page will have the word Template in a bold script version of a modern font and will slowly fade into the background.

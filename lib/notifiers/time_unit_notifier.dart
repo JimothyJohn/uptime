@@ -2,7 +2,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class TimeUnitNotifier extends StateNotifier<String> {
-  TimeUnitNotifier() : super('Days');
+  TimeUnitNotifier() : super('Shifts');
 
   void changeTimeUnit(String newTimeUnit) {
     state = newTimeUnit;

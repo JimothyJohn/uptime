@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visuals/common/models.dart';
 import 'package:visuals/common/utils.dart';
+import 'package:visuals/test/utils.dart';
 import 'package:visuals/notifiers/machine_notifier.dart';
 import 'package:visuals/ui/speedometer.dart';
 import 'package:visuals/ui/bar_chart.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 
 class MachineDetailsPopup extends StatelessWidget {
   final Machine machine;
@@ -86,8 +87,8 @@ class AnalyticsTab extends ConsumerWidget {
           // Assuming ProductivityBarChart and Speedometer accept a Machine object
           ProductivityBarChart(
             size: 300,
-            measurements: normalizeMeasurements(machine,
-                generateDayMeasurements(DateTime(2024, 3, 4, 8, 0, 0), 8)),
+            measurements:
+                normalizeMeasurements(machine, generateMeasurements("s", 1)[0]),
             timeUnit: timeUnit,
           ),
         ],

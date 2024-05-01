@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 import 'package:visuals/notifiers/theme_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

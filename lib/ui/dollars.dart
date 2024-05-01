@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 
 class MoneyValueText extends StatelessWidget {
   final double hours;

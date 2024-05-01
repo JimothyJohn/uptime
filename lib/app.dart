@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
 import 'package:visuals/notifiers/theme_notifier.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 import 'package:visuals/ui/app_bar.dart';
 import 'package:visuals/ui/trend_page.dart';
 

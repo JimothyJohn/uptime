@@ -1,7 +1,7 @@
 // Import necessary Flutter and Riverpod packages
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visuals/common/models.dart';
-import 'package:visuals/common/constants.dart';
+import 'package:visuals/test/constants.dart';
 
 class MachineListNotifier extends StateNotifier<List<Machine>> {
   MachineListNotifier()

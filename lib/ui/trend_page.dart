@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:visuals/test/utils.dart';
 import 'package:visuals/ui/common.dart';
-import 'package:visuals/common/constants.dart';
+import 'package:visuals/test/constants.dart';
 import 'package:visuals/ui/speedometer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:visuals/notifiers/time_unit_notifier.dart';
@@ -9,7 +10,7 @@ import 'package:visuals/notifiers/process_notifier.dart';
 import 'package:visuals/notifiers/filter_popout_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:visuals/common/models.dart';
-import 'package:visuals/ui/theme.dart';
+import 'package:visuals/common/theme.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -21,19 +22,12 @@ class ListPage extends ConsumerWidget {
     bool showFadeEffect = true;
     final String timeUnit =
         ref.watch(timeUnitNotifierProvider); // Watch the current time unit
+    final int timeAmount =
+        ref.watch(timeAmountNotifierProvider); // Watch the current time unit
 
-    late Map<Machine, List<Measurement>> measurements;
-
-    switch (timeUnit.toLowerCase()[0]) {
-      case 'd':
-        measurements = dayMeasurementMap;
-      case 'w':
-        measurements = weekMeasurementMap;
-      case 'm':
-        measurements = monthMeasurementMap;
-      default:
-        return const ListPage(); // Default view
-    }
+    final Map<Machine, List<Measurement>> measurements =
+        createMachinesHistoryMap(
+            timeUnit.toLowerCase()[0], timeAmount, allMachines);
 
     return Stack(
       children: [
@@ -68,52 +62,60 @@ class ListPage extends ConsumerWidget {
                         padding: const EdgeInsets.all(20),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            const Column(
+                            Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 10),
-                                  child: Speedometer(value: 0.8, size: 150),
+                                Column(
+                                  children: [
+                                    const Padding(
+                                        padding:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        child:
+                                            Speedometer(value: 0.8, size: 150)),
+                                    Text("OEE",
+                                        style: textStyle.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
                                 ),
                               ],
                             ),
                             Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: TextButton(
-                                      onPressed: () => ref
-                                          .read(filterPopoutNotifierProvider
-                                              .notifier)
-                                          .toggleFilterPopout(),
-                                      child: Row(
-                                        children: [
-                                          Text("Filter",
-                                              style: textStyle.copyWith(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurface)),
-                                          const Icon(Icons.filter_list),
-                                        ],
-                                      ),
-                                    )),
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 10),
-                                      child: Text("Past",
+                                TextButton(
+                                  onPressed: () => ref
+                                      .read(
+                                          filterPopoutNotifierProvider.notifier)
+                                      .toggleFilterPopout(),
+                                  child: Row(
+                                    children: [
+                                      Text("Filter",
                                           style: textStyle.copyWith(
                                               color: Theme.of(context)
                                                   .colorScheme
                                                   .onSurface)),
+                                      const Icon(Icons.filter_list),
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Past",
+                                        style: textStyle.copyWith(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface)),
+                                    const Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 20.0),
+                                      child: TimeAmountDropdown(),
                                     ),
-                                    const TimeAmountDropdown(),
                                     const TimeUnitDropdown(),
                                   ],
                                 ),
@@ -130,7 +132,6 @@ class ListPage extends ConsumerWidget {
                           onNotification: (ScrollNotification notification) {
                             // Determine if the scroll position is at the bottom
                             // final bool atBottom = notification.metrics.pixels >=notification.metrics.maxScrollExtent;
-
                             // Returning null (or false) to indicate the notification is not handled further
                             return false;
                           },
@@ -267,13 +268,14 @@ class TimeUnitDropdown extends ConsumerWidget {
       ),
       value: timeUnit,
       icon: const Icon(Icons.arrow_downward),
+      elevation: 16,
       onChanged: (String? newValue) {
         if (newValue != null) {
           ref.read(timeUnitNotifierProvider.notifier).changeTimeUnit(newValue);
         }
       },
       items: <String>[
-        'Days',
+        'Shifts',
         'Weeks',
         'Months',
       ].map<DropdownMenuItem<String>>((String value) {
