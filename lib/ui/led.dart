@@ -4,8 +4,7 @@ class IndicatorLed extends StatefulWidget {
   final bool status;
   final double size;
 
-  const IndicatorLed({Key? key, required this.status, required this.size})
-      : super(key: key);
+  const IndicatorLed({super.key, required this.status, required this.size});
 
   @override
   _IndicatorLedState createState() => _IndicatorLedState();
@@ -69,8 +68,8 @@ class _LedPainter extends CustomPainter {
 
     // Update the glow to use the animated glowOpacity
     paint.color = (status
-            ? Color.fromRGBO(0, 220, 100, 1.0)
-            : Color.fromRGBO(220, 0, 100, 1.0))
+            ? const Color.fromRGBO(0, 220, 100, 1.0)
+            : const Color.fromRGBO(220, 0, 100, 1.0))
         .withOpacity(glowOpacity);
     paint.maskFilter = MaskFilter.blur(BlurStyle.normal, size.width / 6);
     canvas.drawCircle(size.center(Offset.zero), size.width / 2, paint);

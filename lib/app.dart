@@ -1,35 +1,44 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/material.dart';
-import 'package:visuals/notifiers/theme_notifier.dart';
-import 'package:visuals/common/theme.dart';
-import 'package:visuals/ui/app_bar.dart';
-import 'package:visuals/ui/trend_page.dart';
+import 'package:uptime/common/theme.dart';
+// import 'package:visuals/features/user/ui/user_page.dart';
+// import 'package:visuals/features/machine/ui/machines_page.dart';
+// import 'package:visuals/features/dev/ui/dev_page.dart';
+import 'package:uptime/features/auth/utils.dart';
+import 'package:uptime/screens/welcome_screen.dart';
+import 'package:uptime/screens/trend_screen.dart';
+import 'package:amplify_authenticator/amplify_authenticator.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:uptime/notifiers/theme_notifier.dart';
 
-class MyApp extends ConsumerWidget {
-  const MyApp({Key? key}) : super(key: key);
+// Application for Uptime app
+class Uptime extends ConsumerWidget {
+  const Uptime({super.key});
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Listen to the theme mode state
-    final themeMode = ref.watch(themeNotifierProvider);
+    // Add AWS Authenticator and API plugins
+    configureAmplify();
 
-    return MaterialApp(
-        title: 'Uptime Visualization',
-        theme: lightTheme, // Defined in your theme.dart
-        darkTheme: darkTheme, // Defined in your theme.dart
-        themeMode: themeMode, // Use the theme mode from the state notifier
-        home: Scaffold(
-          appBar: MyAppBar(
-            title: "UPTIME",
-            themeMode: themeMode,
-          ),
-          body: const ListPage(),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: Theme.of(context).colorScheme.onSurface,
-            foregroundColor: Theme.of(context).colorScheme.surface,
-            onPressed: () => print("Hello"),
-            tooltip: 'Add machine',
-            child: const Icon(Icons.add),
-          ),
+    final ThemeMode themeMode =
+        ref.watch(themeNotifierProvider); // Watch the current time unit
+
+    return Authenticator(
+        // View Sign-In or Sign-Up page
+        authenticatorBuilder: myAuthenticatorBuilder,
+        child: MaterialApp(
+          initialRoute: '/',
+          routes: {
+            // '/settings': (context) => const UserScreen(),
+            '/devices': (context) => const ListPage(),
+            // '/dev': (context) => DevPage(),
+          },
+          builder: Authenticator.builder(),
+          title: 'Uptime',
+          // Greyblue forground on an off-white background with dark text
+          theme: lightTheme, // Defined in your theme.dart
+          darkTheme: darkTheme, // Defined in your theme.dart
+          themeMode: themeMode, // Use the theme mode from the state notifier
+          home: const LandingPage(),
         ));
   }
 }

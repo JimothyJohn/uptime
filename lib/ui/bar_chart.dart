@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/common/utils.dart';
-import 'package:visuals/common/models.dart';
-import 'package:visuals/common/theme.dart';
+import 'package:uptime/common/utils.dart';
+import 'package:uptime/models/ModelProvider.dart';
+import 'package:uptime/common/theme.dart';
 
 class ProductivityBarChart extends StatefulWidget {
   final List<Measurement> measurements;
@@ -10,11 +10,11 @@ class ProductivityBarChart extends StatefulWidget {
   final String timeUnit;
 
   const ProductivityBarChart({
-    Key? key,
+    super.key,
     required this.size,
     required this.measurements,
     required this.timeUnit,
-  }) : super(key: key);
+  });
 
   @override
   _ProductivityBarChartState createState() => _ProductivityBarChartState();
@@ -153,7 +153,9 @@ class ProductivityBarChartPainter extends CustomPainter {
       switch (timeUnit.toLowerCase()[0]) {
         case "s":
           // Count up hours from start time
-          displayedTime = (measurements[0].time.hour + (i / freq)).toInt();
+          displayedTime =
+              (measurements[0].time.getDateTimeInUtc().hour + (i / freq))
+                  .toInt();
           textPainter.text = TextSpan(
               text: displayedTime < 13
                   ? "$displayedTime"
@@ -165,14 +167,18 @@ class ProductivityBarChartPainter extends CustomPainter {
           textPainter.text = TextSpan(
               text: weekdays[
                   // Count up days from start of the period, 12 samples per day
-                  (measurements[0].time.weekday + (i / freq) - 1).toInt()],
+                  (measurements[0].time.getDateTimeInUtc().weekday +
+                          (i / freq) -
+                          1)
+                      .toInt()],
               style: textStyle.copyWith(fontSize: size.width / 20));
           break;
         case "m":
           // Print every 5 days accounting for 2 shifts per day
           freq = 2 * 5;
           // Count up days from start of the period, 2 shifts per day
-          displayedTime = (measurements[0].time.day + (i / 2)).toInt();
+          displayedTime =
+              (measurements[0].time.getDateTimeInUtc().day + (i / 2)).toInt();
           textPainter.text = TextSpan(
               text: "$displayedTime",
               style: textStyle.copyWith(fontSize: size.width / 20));

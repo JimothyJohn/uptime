@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/ui/bar_chart.dart';
-import 'package:visuals/ui/machine_popup.dart';
-import 'package:visuals/ui/dollars.dart';
-import 'package:visuals/notifiers/process_notifier.dart';
-import 'package:visuals/common/utils.dart';
-import 'package:visuals/ui/led.dart';
+import 'package:uptime/ui/bar_chart.dart';
+import 'package:uptime/screens/device_screen.dart';
+import 'package:uptime/ui/dollars.dart';
+import 'package:uptime/notifiers/process_notifier.dart';
+import 'package:uptime/common/utils.dart';
+import 'package:uptime/ui/led.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/common/models.dart';
+import 'package:uptime/models/ModelProvider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MachineHeader extends StatelessWidget {
-  const MachineHeader({
-    Key? key,
-  }) : super(key: key);
+class DeviceHeader extends StatelessWidget {
+  const DeviceHeader({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -77,21 +77,20 @@ class MachineHeader extends StatelessWidget {
   }
 }
 
-class MachineRow extends StatelessWidget {
+class DeviceRow extends StatelessWidget {
   final List<Measurement> production;
-  final Machine machine;
+  final Device device;
   final String timeUnit;
-  const MachineRow(
-      {Key? key,
+  const DeviceRow(
+      {super.key,
       required this.production,
-      required this.machine,
-      required this.timeUnit})
-      : super(key: key);
+      required this.device,
+      required this.timeUnit});
 
   @override
   Widget build(BuildContext context) {
     final List<Measurement> normalizedProduction =
-        normalizeMeasurements(machine, production);
+        normalizeMeasurements(device, production);
 
     const double height = 25;
     const double padding = 8;
@@ -102,8 +101,7 @@ class MachineRow extends StatelessWidget {
             onPressed: () => showDialog(
                 context: context,
                 builder: (BuildContext context) {
-                  return MachineDetailsPopup(
-                      machine: machine, timeUnit: timeUnit);
+                  return DeviceDetailsPopup(device: device, timeUnit: timeUnit);
                 }),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -116,35 +114,37 @@ class MachineRow extends StatelessWidget {
                       // Get the state of the most recent measurement
                       status:
                           normalizedProduction[production.length - 1].value >
-                              machine.runCurrent * .2,
+                              (device.runCurrent ?? 0) * .2,
                       size: 20),
                 ),
-                // Machine name
+                // Device name
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: padding),
                   child: SizedBox(
                     width: 100,
                     height: height,
-                    child: Text(machine.name,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.orbitron(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            shadows: [
-                              const Shadow(
-                                offset: Offset(
-                                    0, 0), // Horizontal and vertical offset
-                                blurRadius:
-                                    10, // How much the shadow is blurred
-                                color: Color.fromRGBO(130, 200, 130,
-                                    0.1), // Shadow color with opacity
-                              )
-                            ],
-                            fontWeight: FontWeight.bold)),
+                    child: Center(
+                      child: Text(device.name,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.orbitron(
+                              color: Theme.of(context).colorScheme.onSurface,
+                              shadows: [
+                                const Shadow(
+                                  offset: Offset(
+                                      0, 0), // Horizontal and vertical offset
+                                  blurRadius:
+                                      10, // How much the shadow is blurred
+                                  color: Color.fromRGBO(130, 200, 130,
+                                      0.1), // Shadow color with opacity
+                                )
+                              ],
+                              fontWeight: FontWeight.bold)),
+                    ),
                   ),
                 ),
                 // Productivity chart
                 Padding(
-                  padding: const EdgeInsets.only(bottom: padding),
+                  padding: const EdgeInsets.symmetric(horizontal: padding),
                   child: SizedBox(
                     width: 200,
                     height: height,
@@ -161,10 +161,12 @@ class MachineRow extends StatelessWidget {
                   child: SizedBox(
                     width: 100,
                     height: 30,
-                    child: MoneyValueText(
-                        hours: 8,
-                        hourlyValue: machine.hourlyValue,
-                        uptime: getUptimeMeasurements(normalizedProduction)),
+                    child: Center(
+                      child: MoneyValueText(
+                          hours: 8,
+                          hourlyValue: device.hourlyValue,
+                          uptime: getUptimeMeasurements(normalizedProduction)),
+                    ),
                   ),
                 ),
               ],
@@ -184,34 +186,34 @@ class MachineRow extends StatelessWidget {
   }
 }
 
-class MachineList extends ConsumerWidget {
+class DeviceList extends ConsumerWidget {
   final String timeUnit;
-  final Map<Machine, List<Measurement>> machineMeasurementsMap;
+  final Map<Device, List<Measurement>> deviceMeasurementsMap;
 
-  const MachineList({
-    Key? key,
+  const DeviceList({
+    super.key,
     required this.timeUnit,
-    required this.machineMeasurementsMap,
-  }) : super(key: key);
+    required this.deviceMeasurementsMap,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final filterProcess = ref.watch(processNotifierProvider);
-    // Filter machines based on the specified process, if any.
-    final List<Machine> filteredMachines = filterProcess == ""
-        ? machineMeasurementsMap.keys.toList()
-        : machineMeasurementsMap.keys
-            .where((machine) => machine.process == filterProcess)
+    // Filter devices based on the specified process, if any.
+    final List<Device> filteredDevices = filterProcess == ""
+        ? deviceMeasurementsMap.keys.toList()
+        : deviceMeasurementsMap.keys
+            .where((device) => device.process == filterProcess)
             .toList();
     return ListView.builder(
-      itemCount: filteredMachines.length,
+      itemCount: filteredDevices.length,
       itemBuilder: (context, index) {
-        Machine machine = filteredMachines[index];
-        List<Measurement> measurements = machineMeasurementsMap[machine]!;
+        Device device = filteredDevices[index];
+        List<Measurement> measurements = deviceMeasurementsMap[device]!;
 
-        return MachineRow(
+        return DeviceRow(
           production: measurements,
-          machine: machine,
+          device: device,
           timeUnit: timeUnit,
         );
       },

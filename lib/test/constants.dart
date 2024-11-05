@@ -1,7 +1,8 @@
-import 'package:visuals/common/models.dart';
+import 'package:uptime/models/ModelProvider.dart';
 
-const Machine perfecto = Machine(
+Device perfecto = Device(
     id: "",
+    serialNumber: "",
     process: "Addition",
     hourlyValue: 100,
     cycleTime: 10,
@@ -11,8 +12,9 @@ const Machine perfecto = Machine(
     idleCurrent: 0.5,
     targetUptime: 0.9);
 
-const Machine downBoy = Machine(
+Device downBoy = Device(
     id: "",
+    serialNumber: "",
     process: "Addition",
     hourlyValue: 100,
     cycleTime: 10,
@@ -22,8 +24,9 @@ const Machine downBoy = Machine(
     idleCurrent: 2,
     targetUptime: 0.9);
 
-const Machine upMan = Machine(
+Device upMan = Device(
     id: "",
+    serialNumber: "",
     process: "Addition",
     hourlyValue: 100,
     cycleTime: 10,
@@ -33,8 +36,9 @@ const Machine upMan = Machine(
     idleCurrent: 1,
     targetUptime: 0.9);
 
-const Machine upMon = Machine(
+Device upMon = Device(
     id: "",
+    serialNumber: "",
     process: "Addition",
     hourlyValue: 100,
     cycleTime: 10,
@@ -44,8 +48,9 @@ const Machine upMon = Machine(
     idleCurrent: 1.5,
     targetUptime: 0.8);
 
-const Machine upOne = Machine(
+Device upOne = Device(
     id: "",
+    serialNumber: "",
     process: "Subtraction",
     hourlyValue: 50,
     cycleTime: 20,
@@ -55,8 +60,9 @@ const Machine upOne = Machine(
     idleCurrent: 0.5,
     targetUptime: 0.9);
 
-const Machine beast = Machine(
+Device beast = Device(
     id: "",
+    serialNumber: "",
     process: "Subtraction",
     hourlyValue: 50,
     cycleTime: 2,
@@ -66,7 +72,7 @@ const Machine beast = Machine(
     idleCurrent: 1.0,
     targetUptime: 0.9);
 
-const List<Machine> allMachines = [
+List<Device> allDevices = [
   perfecto,
   downBoy,
   upMan,

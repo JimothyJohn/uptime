@@ -1,0 +1,24 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-uptimeapp-dev-c6d69-authRole",
+      "UnauthRoleArn": "arn:aws:iam::403059190476:role/amplify-uptimeapp-dev-c6d69-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::403059190476:role/amplify-uptimeapp-dev-c6d69-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-uptimeapp-dev-c6d69-deployment",
+      "UnauthRoleName": "amplify-uptimeapp-dev-c6d69-unauthRole",
+      "StackName": "amplify-uptimeapp-dev-c6d69",
+      "StackId": "arn:aws:cloudformation:us-east-1:403059190476:stack/amplify-uptimeapp-dev-c6d69/3ca24c80-991f-11ef-a95f-0affd5b25ccf",
+      "AmplifyAppId": "d3i4jd7sro7dk9"
+    },
+    "categories": {
+      "auth": {
+        "uptimeappcea14aac": {},
+        "uptimeapp1aff2dab": {}
+      },
+      "api": {
+        "uptimeapp": {}
+      }
+    }
+  }
+}

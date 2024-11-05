@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/common/theme.dart';
-import 'package:visuals/notifiers/theme_notifier.dart';
+import 'package:uptime/common/theme.dart';
+import 'package:uptime/notifiers/theme_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final String title;
   final ThemeMode themeMode;
 
-  const MyAppBar({Key? key, required this.title, required this.themeMode})
-      : super(key: key);
+  const MyAppBar({super.key, required this.title, required this.themeMode});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

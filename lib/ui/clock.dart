@@ -1,8 +1,8 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/common/utils.dart';
-import 'package:visuals/common/theme.dart';
+import 'package:uptime/common/utils.dart';
+import 'package:uptime/common/theme.dart';
 
 class Clock extends StatefulWidget {
   final List<double> machineStates;
@@ -10,12 +10,11 @@ class Clock extends StatefulWidget {
   final double startingHour;
 
   const Clock({
-    Key? key,
+    super.key,
     required this.size,
     required this.machineStates,
     required this.startingHour,
-  })  : assert(machineStates.length <= 60),
-        super(key: key);
+  }) : assert(machineStates.length <= 60);
 
   @override
   _ClockState createState() => _ClockState();

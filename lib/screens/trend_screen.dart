@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/test/utils.dart';
-import 'package:visuals/ui/common.dart';
-import 'package:visuals/test/constants.dart';
-import 'package:visuals/ui/speedometer.dart';
+import 'package:uptime/test/utils.dart';
+import 'package:uptime/ui/common.dart';
+import 'package:uptime/test/constants.dart';
+import 'package:uptime/ui/speedometer.dart';
+import 'package:uptime/ui/layout.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:visuals/notifiers/time_unit_notifier.dart';
-import 'package:visuals/notifiers/time_amount_notifier.dart';
-import 'package:visuals/notifiers/process_notifier.dart';
-import 'package:visuals/notifiers/filter_popout_notifier.dart';
+import 'package:uptime/notifiers/time_unit_notifier.dart';
+import 'package:uptime/notifiers/time_amount_notifier.dart';
+import 'package:uptime/notifiers/process_notifier.dart';
+import 'package:uptime/notifiers/filter_popout_notifier.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:visuals/common/models.dart';
-import 'package:visuals/common/theme.dart';
+import 'package:uptime/models/ModelProvider.dart';
+import 'package:uptime/common/theme.dart';
 
 class ListPage extends ConsumerWidget {
   const ListPage({super.key});
@@ -25,9 +26,35 @@ class ListPage extends ConsumerWidget {
     final int timeAmount =
         ref.watch(timeAmountNotifierProvider); // Watch the current time unit
 
-    final Map<Machine, List<Measurement>> measurements =
-        createMachinesHistoryMap(
-            timeUnit.toLowerCase()[0], timeAmount, allMachines);
+    final Map<Device, List<Measurement>> measurements = createDevicesHistoryMap(
+        timeUnit.toLowerCase()[0], timeAmount, allDevices);
+
+    return UptimeScaffold(
+      child: const Stack(children: <Widget>[
+        Align(
+            alignment: Alignment.centerRight,
+            child: SizedBox(child: Text("Trends")))
+      ]),
+    );
+  }
+}
+
+/*
+class ListPage extends ConsumerWidget {
+  const ListPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool isMenuVisible = ref.watch(filterPopoutNotifierProvider);
+    // This flag indicates whether the fade effect should be visible
+    bool showFadeEffect = true;
+    final String timeUnit =
+        ref.watch(timeUnitNotifierProvider); // Watch the current time unit
+    final int timeAmount =
+        ref.watch(timeAmountNotifierProvider); // Watch the current time unit
+
+    final Map<Device, List<Measurement>> measurements = createDevicesHistoryMap(
+        timeUnit.toLowerCase()[0], timeAmount, allDevices);
 
     return Stack(
       children: [
@@ -74,7 +101,7 @@ class ListPage extends ConsumerWidget {
                                             EdgeInsets.symmetric(vertical: 10),
                                         child:
                                             Speedometer(value: 0.8, size: 150)),
-                                    Text("OEE",
+                                    Text("Factory Efficiency",
                                         style: textStyle.copyWith(
                                             color: Theme.of(context)
                                                 .colorScheme
@@ -124,7 +151,7 @@ class ListPage extends ConsumerWidget {
                           ],
                         ),
                       ),
-                      const MachineHeader(),
+                      const DeviceHeader(),
                       // Prevents bottom overflow
                       Expanded(
                         // Tracks scroll position
@@ -139,9 +166,9 @@ class ListPage extends ConsumerWidget {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(top: 8.0),
-                                child: MachineList(
+                                child: DeviceList(
                                     timeUnit: timeUnit.toString().toLowerCase(),
-                                    machineMeasurementsMap: measurements),
+                                    deviceMeasurementsMap: measurements),
                               ),
                               if (showFadeEffect)
                                 Positioned(
@@ -156,10 +183,10 @@ class ListPage extends ConsumerWidget {
                                         colors: [
                                           Theme.of(context)
                                               .colorScheme
-                                              .background, // Starting color
+                                              .surface, // Starting color
                                           Theme.of(context)
                                               .colorScheme
-                                              .background
+                                              .surface
                                               .withOpacity(0)
                                         ],
                                         begin: Alignment.bottomCenter,
@@ -186,7 +213,7 @@ class ListPage extends ConsumerWidget {
           top: 0,
           bottom: 0,
           child: Container(
-            color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.surface,
             child: Column(children: [
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -217,7 +244,7 @@ class ListPage extends ConsumerWidget {
     );
   }
 }
-
+*/
 class TimeAmountDropdown extends ConsumerWidget {
   const TimeAmountDropdown({super.key});
 

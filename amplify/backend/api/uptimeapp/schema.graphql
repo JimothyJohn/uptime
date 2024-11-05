@@ -1,0 +1,60 @@
+# This "input" configures a global authorization rule to enable public access to
+# all models in this schema. Learn more about authorization rules here: https://docs.amplify.aws/cli/graphql/authorization-rules
+input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
+
+type Measurement {
+  time: AWSDateTime!
+  value: Float!
+}
+
+type CustomerAddress {
+  line1: String
+  line2: String
+  city: String
+  state: String
+  postal_code: String
+  country: String
+}
+
+type StripeBillingDetails {
+  address: CustomerAddress!
+  email: String!
+  name: String
+  phone: String
+}
+
+type User @model {
+  id: ID!
+  authId: ID!
+  billingDetails: StripeBillingDetails
+  division: String
+  location: String
+  # customer: Customer
+  # subscription: StripeSubscription
+  # subscriptionItem: SubscriptionItem
+  # paymentMethod: StripePaymentMethod
+  devices: [Device] @hasMany
+  # organizationId: ID @index(name: "organization")
+  # organization: Organization @belongsTo(fields: ["organizationId"])
+}
+
+type Device @model {
+  id: ID!
+  name: String!
+  hourlyValue: Float!
+  serialNumber: ID!
+  manufacturer: String
+  model: String
+  process: String
+  cycleTime: Float
+  active: Boolean!
+  runCurrent: Float
+  idleCurrent: Float
+  targetUptime: Float
+  division: String
+  location: String
+  # subscriptionItem: ID
+  user: User @belongsTo
+  # organizationId: ID @index(name: "organization")
+  # organization: Organization @belongsTo(fields: ["organizationId"])
+}

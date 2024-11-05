@@ -1,19 +1,20 @@
 import 'dart:math';
-import 'package:visuals/common/models.dart';
-import 'package:visuals/common/utils.dart';
+import 'package:amplify_core/amplify_core.dart';
+import 'package:uptime/models/ModelProvider.dart';
+import 'package:uptime/common/utils.dart';
 
-Map<Machine, List<Measurement>> createMachinesHistoryMap(
-    String timeUnit, int timeAmount, List<Machine> machines) {
-  // Initialize an empty map to store the association between Machine and List<Measurement>
-  Map<Machine, List<Measurement>> machineMeasurementsMap = {};
+Map<Device, List<Measurement>> createDevicesHistoryMap(
+    String timeUnit, int timeAmount, List<Device> devices) {
+  // Initialize an empty map to store the association between Device and List<Measurement>
+  Map<Device, List<Measurement>> deviceMeasurementsMap = {};
 
-  // Iterate through the list of machines
-  for (int i = 0; i < machines.length; i++) {
-    machineMeasurementsMap[machines[i]] =
+  // Iterate through the list of devices
+  for (int i = 0; i < devices.length; i++) {
+    deviceMeasurementsMap[devices[i]] =
         averageMeasurements(generateMeasurements(timeUnit, timeAmount));
   }
 
-  return machineMeasurementsMap;
+  return deviceMeasurementsMap;
 }
 
 List<List<Measurement>> generateMeasurements(String timeUnit, int samples) {
@@ -24,7 +25,8 @@ List<List<Measurement>> generateMeasurements(String timeUnit, int samples) {
   switch (timeUnit.toLowerCase()[0]) {
     case 's':
       const int shiftLength = 8;
-      DateTime currentTime = DateTime(2024, 3, 1, 8, 0, 0);
+      TemporalDateTime currentTime =
+          TemporalDateTime(DateTime(2024, 3, 1, 8, 0, 0));
 
       for (int i = 0; i < samples; i++) {
         measurements = [];
@@ -35,16 +37,19 @@ List<List<Measurement>> generateMeasurements(String timeUnit, int samples) {
                 1; // random.nextDouble() generates a value between 0.0 and 1.0
             // Increment currentTime
             measurements.add(Measurement(
-                time: currentTime
-                    .add(Duration(hours: hour, minutes: 12 * minute)),
+                time: TemporalDateTime(currentTime
+                    .getDateTimeInUtc()
+                    .add(Duration(hours: hour, minutes: 12 * minute))),
                 value: value));
           }
         }
         history.add(measurements);
-        currentTime = currentTime.subtract(Duration(days: i));
+        currentTime = TemporalDateTime(
+            currentTime.getDateTimeInUtc().subtract(Duration(days: i)));
       }
     case 'w':
-      DateTime currentTime = DateTime.now().subtract(const Duration(days: 7));
+      TemporalDateTime currentTime =
+          TemporalDateTime(DateTime.now().subtract(const Duration(days: 7)));
 
       for (int i = 0; i < samples; i++) {
         measurements = [];
@@ -56,14 +61,17 @@ List<List<Measurement>> generateMeasurements(String timeUnit, int samples) {
             measurements.add(Measurement(time: currentTime, value: value));
 
             // Increment currentTime by 2 hours
-            currentTime = currentTime.add(const Duration(hours: 2));
+            currentTime = TemporalDateTime(
+                currentTime.getDateTimeInUtc().add(const Duration(hours: 2)));
           }
         }
         history.add(measurements);
-        currentTime = currentTime.subtract(Duration(days: 7 * i));
+        currentTime = TemporalDateTime(
+            currentTime.getDateTimeInUtc().subtract(Duration(days: 7 * i)));
       }
     case 'm':
-      DateTime firstOfMonth = DateTime.now().subtract(const Duration(days: 30));
+      TemporalDateTime firstOfMonth =
+          TemporalDateTime(DateTime.now().subtract(const Duration(days: 30)));
 
       for (int i = 0; i < samples; i++) {
         measurements = [];
@@ -75,11 +83,13 @@ List<List<Measurement>> generateMeasurements(String timeUnit, int samples) {
             measurements.add(Measurement(time: firstOfMonth, value: value));
 
             // Increment currentTime by 2 hours
-            firstOfMonth = firstOfMonth.add(const Duration(hours: 12));
+            firstOfMonth = TemporalDateTime(
+                firstOfMonth.getDateTimeInUtc().add(const Duration(hours: 12)));
           }
         }
         history.add(measurements);
-        firstOfMonth = firstOfMonth.subtract(Duration(days: 30 * i));
+        firstOfMonth = TemporalDateTime(
+            firstOfMonth.getDateTimeInUtc().subtract(Duration(days: 30 * i)));
       }
   }
 

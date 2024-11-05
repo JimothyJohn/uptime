@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:visuals/common/theme.dart';
+import 'package:uptime/common/theme.dart';
 
 class MoneyValueText extends StatelessWidget {
   final double hours;
@@ -7,11 +7,11 @@ class MoneyValueText extends StatelessWidget {
   final double uptime;
 
   const MoneyValueText({
-    Key? key,
+    super.key,
     required this.hours,
     required this.hourlyValue,
     required this.uptime,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

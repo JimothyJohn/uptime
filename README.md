@@ -1,11 +1,11 @@
-# visuals
+# Uptime
 
-Visual sandbox for Uptime application.
+Sandbox for Uptime application.
 
 ### Quickstart
 
 ```bash
-utils/Quickstart.sh
+utils/Quickstart
 ```
 
 ### Sample Query
@@ -43,4 +43,8 @@ Day (dark mode)
 
 ### TODO
 
-* Add tests
+[ ] Deploy to Amplify
+
+[ ] Rebuild devices screen
+
+[ ] Add tests

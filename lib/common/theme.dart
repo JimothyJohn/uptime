@@ -9,8 +9,6 @@ const ColorScheme uptimeColorScheme = ColorScheme(
   onSecondary: Color(0xff222222),
   surface: Color(0xffdddddd),
   onSurface: Color(0xff222222),
-  background: Color(0xffdddddd),
-  onBackground: Color(0xff222222),
   error: Colors.red,
   onError: Colors.white,
   brightness: Brightness.light,
@@ -28,10 +26,6 @@ const ColorScheme uptimeColorDark = ColorScheme(
   surface: Color(
       0xFF424242), // A lighter gray for surfaces, contributing to a less serious tone
   onSurface: Color(
-      0xDEFFFFFF), // Slightly translucent white, for text/icons on top of the surface color
-  background: Color(
-      0xFF303030), // Lightening the background slightly to reduce the heaviness
-  onBackground: Color(
       0xDEFFFFFF), // Slightly translucent white, for text/icons on top of the background color
   error: Color(
       0xFFF44336), // A brighter red for errors, maintaining visibility but adding vibrancy
